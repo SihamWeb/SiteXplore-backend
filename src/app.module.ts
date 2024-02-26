@@ -3,6 +3,8 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { ConfigModule } from '@nestjs/config';
 import { SequelizeModule } from '@nestjs/sequelize';
+import { RssModule } from './rss/rss.module';
+import { MediaModule } from './media/media.module';
 import * as process from "process";
 
 @Module({
@@ -17,6 +19,8 @@ import * as process from "process";
         database: process.env.DB_DATABASE,
         models: [],
       }),
+      RssModule,
+      MediaModule,
   ],
   controllers: [AppController],
   providers: [AppService],
