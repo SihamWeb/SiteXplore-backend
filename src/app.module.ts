@@ -3,6 +3,8 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { ConfigModule } from '@nestjs/config';
 import { SequelizeModule } from '@nestjs/sequelize';
+import { AuthenticationModule } from './authentication/authentication.module';
+import { UserModule } from './user/user.module';
 import * as process from "process";
 
 @Module({
@@ -17,6 +19,8 @@ import * as process from "process";
         database: process.env.DB_DATABASE,
         models: [],
       }),
+      AuthenticationModule,
+      UserModule,
   ],
   controllers: [AppController],
   providers: [AppService],
