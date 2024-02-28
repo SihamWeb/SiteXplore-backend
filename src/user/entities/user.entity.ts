@@ -1,5 +1,6 @@
-import {AutoIncrement, Column, Model, PrimaryKey} from "sequelize-typescript";
+import {AutoIncrement, Column, CreatedAt, Model, PrimaryKey, Table, UpdatedAt} from "sequelize-typescript";
 
+@Table({ tableName: 'user' })
 export class User extends Model {
     @AutoIncrement
     @PrimaryKey
@@ -26,5 +27,13 @@ export class User extends Model {
 
     @Column({ type: 'datetime', allowNull: true })
     lastConnection: Date;
+
+    @Column({ type: 'datetime' })
+    @CreatedAt
+    createdAt: Date;
+
+    @Column({ type: 'datetime' })
+    @UpdatedAt
+    updatedAt: Date;
 
 }
