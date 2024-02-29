@@ -8,10 +8,10 @@ export class User extends Model {
     id: number;
 
     @Column
-    firstname: string;
+    firstName: string;
 
     @Column
-    lastname: string;
+    lastName: string;
 
     @Column({ unique: true })
     email: string;
@@ -23,10 +23,10 @@ export class User extends Model {
     isAdmin: boolean;
 
     @Column({ allowNull: true })
-    profilePicture: string;
+    profilePicture?: string;
 
     @Column({ type: 'datetime', allowNull: true })
-    lastConnection: Date;
+    lastConnection?: Date;
 
     @Column({ type: 'datetime' })
     @CreatedAt

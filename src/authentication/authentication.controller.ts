@@ -3,10 +3,22 @@ import {AuthenticationService} from "./authentication.service";
 import {LocalGuard} from "./guards/local.guard";
 import {Request} from 'express';
 import {JwtAuthGuard} from "./guards/jwt.guard";
+import {CreateUserDto} from "../user/dto/create-user.dto";
+import {UserService} from "../user/user.service";
 
-@Controller('auth')
+@Controller()
 export class AuthenticationController {
-    constructor(private authenticationService: AuthenticationService) {}
+    constructor(
+        private authenticationService: AuthenticationService,
+        private userService: UserService
+    ) {}
+
+    @Post('register')
+    register(
+        @Body() userData: CreateUserDto
+    ) {
+        return this.userService.create(userData);
+    }
 
     @Post('login')
     @UseGuards(LocalGuard)
