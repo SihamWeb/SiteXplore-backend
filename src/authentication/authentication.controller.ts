@@ -17,7 +17,7 @@ export class AuthenticationController {
     register(
         @Body() userData: CreateUserDto
     ) {
-        return this.userService.create(userData);
+        return this.authenticationService.register(userData);
     }
 
     @Post('login')

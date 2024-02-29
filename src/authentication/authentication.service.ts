@@ -18,10 +18,8 @@ export class AuthenticationService {
     async register(userData: CreateUserDto): Promise<User> {
         const { email, password, firstName, lastName } = userData;
 
-        // Hash the password
         const hashedPassword = await bcrypt.hash(password, 10);
 
-        // Create the user
         const user = new User();
         user.email = email;
         user.password = hashedPassword;
@@ -31,11 +29,9 @@ export class AuthenticationService {
         try {
             await user.save();
         } catch (e) {
-            // Handle error appropriately
             throw e;
         }
 
-        // Return the created user
         return user;
     }
 
