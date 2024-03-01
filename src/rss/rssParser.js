@@ -1,5 +1,7 @@
-let Parser = require('rss-parser');
-let parser = new Parser();
+var Split = require('split.js') ;
+var typeOf = require('typeof');
+
+// let parser = new Parser();
 
 (async () => {
 
@@ -7,17 +9,17 @@ let parser = new Parser();
 
     var rss_feed =
         [
-            'https://www.inrap.fr/rss.xml',
-            'https://www.lefigaro.fr/rss/figaro_histoire.xml',
-            'https://www.lemonde.fr/archeologie/rss_full.xml',
-            'https://www.sciencesetavenir.fr/archeo-paleo/rss.xml',
+            'https://www.youtube.com/feeds/videos.xml?channel_id=UC6Yhg_Phtz-RHX0CBFhU8pA',
             'https://services.lesechos.fr/rss/archeologie.xml',
+            'https://www.lemonde.fr/archeologie/rss_full.xml',
+            'https://www.lefigaro.fr/rss/figaro_histoire.xml',
+            'https://www.sciencesetavenir.fr/archeo-paleo/rss.xml',
+            'https://www.inrap.fr/rss.xml',
             'https://archipeldessciences.wordpress.com/category/archeologie/feed/',
             'https://www.cibpl.fr/rubrique/epaves-et-archeologie/epaves-et-archeologie/feed/',
             'https://www.cairn.info/rss/rss_encyclo-histoire.xml',
             'https://histoires-archeologie.lepodcast.fr/rss',
-            'https://radiofrance-podcast.net/podcast09/35099478-7c72-4f9e-a6de-1b928400e9e5/rss_10267.xml',
-            'https://www.youtube.com/feeds/videos.xml?channel_id=UC6Yhg_Phtz-RHX0CBFhU8pA'
+            'https://radiofrance-podcast.net/podcast09/35099478-7c72-4f9e-a6de-1b928400e9e5/rss_10267.xml'
         ]
 
     for (let r = 0; r < rss_feed.length; r++) {
@@ -26,41 +28,52 @@ let parser = new Parser();
         console.log('##### Chargement du flux : ' + rss_feed[r]);
         console.log('#######################################')
 
-        const data = await parser(rss_feed[r]);
+        const data = await parser(rss_feed[r])
 
         data.forEach((item) => {
-            console.log('#######################################')
+            console.log('#######################################');
 
-            var param = ['title', 'description', 'author', 'pubDate', 'link', 'copyright'];
-            for (let i = 0; i < param.length; i++) {
-                if (item[param[i]]) {
-                    console.log(' - ' + param[i] + ' : ' + item[param[i]]);
+            // Auteurs
+            let liste_auteurs = (item.author !== null && item.author.length !== 0) ? item.author : item.meta.author ;
+
+            if (liste_auteurs !== null) {
+                if (liste_auteurs.length !== 0) {
+                    console.log(" - Auteur : " + liste_auteurs)
                 }
             }
 
-            // Image miniature youtube
-            if (item.image) {
-                console.log(item.image) ;
-            }
+            // Categories
+            let liste_categories = (item.categories.length !== 0 ? item.categories : item.meta.categories) ;
 
-            // Image (ou media audio) enclosure
-            if (item['rss:enclosure']) {
-                console.log(item['rss:enclosure']['@']['url'])
-            }
-
-            // Media content
-             else if (item['media:content']) {
-                var image = ['media:description', 'media:credit', '@'];
-                for (let i = 0; i < image.length; i++) {
-                    if (item['media:content'][image[i]]) {
-                        if (image[i] === '@') {
-                            console.log(image[i] + ' : ' + item['media:content'][image[i]].url);
-                        } else {
-                            console.log(image[i] + ' : ' + item['media:content'][image[i]]['#']);
-                        }
+            if (liste_categories !== null) {
+                if (liste_categories.length !== 0) {
+                    for (let i = 0; i < liste_categories.length; i++) {
+                        console.log(" - Catégories : " + liste_categories[i])
                     }
                 }
             }
+
+                        let param = ['title', 'description', 'pubDate', 'link', 'copyright'];
+                        for (let i = 0; i < param.length; i++) {
+                             console.log((item[param[i]]) ? (' - ' + param[i] + ' : ' + item[param[i]]) : '');
+                        }
+
+                        // Image miniature youtube
+                        (item.image.url) ? console.log(" - Image : " + item.image.url) : console.log('') ;
+
+                        // Image (ou media audio) enclosure
+                        (item['rss:enclosure']) ? console.log(" - URL media : " + (item['rss:enclosure']['@']['url'])) : console.log('') ;
+
+                        // Media content
+                         if (item['media:content']) {
+                        let image = ['media:description', 'media:credit', '@'];
+                            for (let i = 0; i < image.length; i++) {
+                                if (item['media:content'][image[i]]) {
+                                    console.log(" - Image : " + ((image[i] === '@') ? (image[i] + ' : ' + item['media:content'][image[i]].url) : (image[i] + ' : ' + item['media:content'][image[i]]['#'])) );
+                                    }
+                                }
+                            }
+
         });
     }
 })();
