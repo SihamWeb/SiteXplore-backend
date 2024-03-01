@@ -1,7 +1,7 @@
-import {Body, Controller, Get, Post, Req, UseGuards} from '@nestjs/common';
+import {Body, Controller, Get, HttpStatus, Post, Query, Req, Res, UseGuards} from '@nestjs/common';
 import {AuthenticationService} from "./authentication.service";
 import {LocalGuard} from "./guards/local.guard";
-import {Request} from 'express';
+import {Request, Response} from 'express';
 import {JwtAuthGuard} from "./guards/jwt.guard";
 import {CreateUserDto} from "../user/dto/create-user.dto";
 import {UserService} from "../user/user.service";
@@ -14,10 +14,21 @@ export class AuthenticationController {
     ) {}
 
     @Post('register')
-    register(
-        @Body() userData: CreateUserDto
+    async register(
+        @Body() userData: CreateUserDto,
+        @Res() res: Response
     ) {
-        return this.authenticationService.register(userData);
+        await this.authenticationService.register(userData);
+        res.status(HttpStatus.CREATED).json({ message: 'Un email de confirmation a été envoyé avec succès.' });
+    }
+
+    @Get('confirm-registration')
+    async confirmRegistration(
+        @Query('token') activationToken: string,
+        @Res() res: Response
+    ) {
+        await this.authenticationService.confirmRegistration(activationToken);
+        res.status(HttpStatus.OK).json({ message: 'Votre inscription a été confirmée avec succès.' });
     }
 
     @Post('login')

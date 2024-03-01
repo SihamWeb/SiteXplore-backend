@@ -1,16 +1,22 @@
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { ConfigModule } from '@nestjs/config';
+import {ConfigModule, ConfigService} from '@nestjs/config';
 import { SequelizeModule } from '@nestjs/sequelize';
 import { AuthenticationModule } from './authentication/authentication.module';
 import { UserModule } from './user/user.module';
 import * as process from "process";
 import {User} from "./user/entities/user.entity";
+import { MailModule } from './mail/mail.module';
+import {HandlebarsAdapter} from "@nestjs-modules/mailer/dist/adapters/handlebars.adapter";
+import {MailerModule} from "@nestjs-modules/mailer";
+import path from "path";
 
 @Module({
     imports: [
-        ConfigModule.forRoot(),
+        ConfigModule.forRoot({
+                isGlobal: true,
+        }),
         SequelizeModule.forRoot({
             dialect: 'mysql',
             host: process.env.DB_HOST,
@@ -22,6 +28,7 @@ import {User} from "./user/entities/user.entity";
         }),
         AuthenticationModule,
         UserModule,
+        MailModule,
     ],
     controllers: [AppController],
     providers: [AppService],

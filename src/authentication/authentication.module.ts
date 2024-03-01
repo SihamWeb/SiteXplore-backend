@@ -10,10 +10,14 @@ import {User} from "../user/entities/user.entity";
 import {UserModule} from "../user/user.module";
 import * as process from "process";
 import { ConfigModule } from '@nestjs/config';
+import {MailerModule} from "@nestjs-modules/mailer";
+import {MailModule} from "../mail/mail.module";
 
 @Module({
     imports: [
         ConfigModule.forRoot(),
+        MailerModule,
+        MailModule,
         UserModule,
         SequelizeModule.forFeature([User]),
         PassportModule,
