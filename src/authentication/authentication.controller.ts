@@ -17,9 +17,9 @@ export class AuthenticationController {
     async register(
         @Body() userData: CreateUserDto,
         @Res() res: Response
-    ) {
-        await this.authenticationService.register(userData);
-        res.status(HttpStatus.CREATED).json({ message: 'Un email de confirmation a été envoyé avec succès.' });
+    ): Promise<void> {
+        const message = await this.authenticationService.register(userData);
+        res.status(HttpStatus.CREATED).json({ message });
     }
 
     @Get('confirm-registration')
