@@ -6,6 +6,17 @@ import {User} from "./entities/user.entity";
 
 @Injectable()
 export class UserService {
+
+  async updateLastConnection(userId: number) {
+    const user = await User.findByPk(userId);
+    console.log('LastConnection : ', user);
+    if (user) {
+      user.lastConnection = new Date();
+      await user.save();
+    }
+  }
+
+
   async create(createUserDto: CreateUserDto): Promise<User> {
     const user = await User.create(createUserDto as Omit<User, 'id'>);
     return user;

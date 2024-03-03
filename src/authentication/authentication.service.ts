@@ -7,6 +7,7 @@ import * as bcrypt from 'bcrypt';
 import {InjectModel} from "@nestjs/sequelize";
 import {MailerService} from "@nestjs-modules/mailer";
 import {MailService} from "../mail/mail.service";
+import {UserService} from "../user/user.service";
 
 @Injectable()
 export class AuthenticationService {
@@ -16,7 +17,8 @@ export class AuthenticationService {
         private readonly userRepository: typeof User,
         private jwtService: JwtService,
         private mailerService: MailerService,
-        private mailService: MailService
+        private mailService: MailService,
+        private userService: UserService,
     ) {}
 
     async isValidEmail(email: string): Promise<boolean> {
@@ -106,6 +108,10 @@ export class AuthenticationService {
                 const comparePassword = await bcrypt.compare(password, user.password);
                 if (comparePassword) {
                     const { password, ...userWithoutThePassword } = user.toJSON();
+
+                    const userId = user.id;
+                    await this.userService.updateLastConnection(userId);
+
                     return this.jwtService.sign(userWithoutThePassword);
                 } else {
                     return 'Mot de passe incorrect';
