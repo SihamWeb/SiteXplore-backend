@@ -98,15 +98,21 @@ export class AuthenticationService {
 
     async validateUser({ email, password }: AuthenticationPayloadDto) {
         const user = await User.findOne({ where: { email } });
+
         if (!user) {
-            return { error: 'Utilisateur introuvable' };
-        }
-        const comparePassword = await bcrypt.compare(password, user.password);
-        if (comparePassword) {
-            const { password, ...userWithoutThePassword } = user.toJSON();
-            return this.jwtService.sign(userWithoutThePassword);
+            return 'Utilisateur introuvable' ;
         } else {
-            return { error: 'Mot de passe invalide' };
+            if (password){
+                const comparePassword = await bcrypt.compare(password, user.password);
+                if (comparePassword) {
+                    const { password, ...userWithoutThePassword } = user.toJSON();
+                    return this.jwtService.sign(userWithoutThePassword);
+                } else {
+                    return 'Mot de passe incorrect';
+                }
+            } else {
+                return 'Aucun mot de passe renseigné' ;
+            }
         }
     }
 }
