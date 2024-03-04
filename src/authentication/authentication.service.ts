@@ -1,11 +1,15 @@
-import {ConflictException, Injectable, InternalServerErrorException} from '@nestjs/common';
+import {
+    BadRequestException,
+    Injectable,
+    InternalServerErrorException,
+    NotFoundException
+} from '@nestjs/common';
 import {AuthenticationPayloadDto} from "./dto/authentication.dto";
 import {JwtService} from "@nestjs/jwt";
 import {User} from "../user/entities/user.entity";
 import {CreateUserDto} from "../user/dto/create-user.dto";
 import * as bcrypt from 'bcrypt';
 import {InjectModel} from "@nestjs/sequelize";
-import {MailerService} from "@nestjs-modules/mailer";
 import {MailService} from "../mail/mail.service";
 import {UserService} from "../user/user.service";
 
@@ -16,7 +20,6 @@ export class AuthenticationService {
         @InjectModel(User)
         private readonly userRepository: typeof User,
         private jwtService: JwtService,
-        private mailerService: MailerService,
         private mailService: MailService,
         private userService: UserService,
     ) {}
@@ -65,8 +68,6 @@ export class AuthenticationService {
             return 'Aucun prénom renseigné' ;
         }
     }
-
-
 
     async confirmRegistration(activationToken: string): Promise<void> {
         const decodedToken = this.jwtService.verify(activationToken);

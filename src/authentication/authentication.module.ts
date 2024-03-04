@@ -24,11 +24,12 @@ import {MailModule} from "../mail/mail.module";
         JwtModule.register({
             secret: process.env.SECRET,
             signOptions: {
-                expiresIn: '1h'
+                expiresIn: '7d'
             },
         })
     ],
     controllers: [AuthenticationController],
-    providers: [AuthenticationService, LocalStrategy, JwtStrategy]
+    providers: [AuthenticationService, LocalStrategy, JwtStrategy],
+    exports: [AuthenticationService]
 })
 export class AuthenticationModule {}

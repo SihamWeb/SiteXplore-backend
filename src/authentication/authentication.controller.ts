@@ -1,16 +1,17 @@
-import {Body, Controller, Get, HttpStatus, Post, Query, Req, Res, UseGuards, Redirect} from '@nestjs/common';
+import {Body, Controller, Get, HttpStatus, Post, Query, Req, Res, UseGuards, Patch} from '@nestjs/common';
 import {AuthenticationService} from "./authentication.service";
 import {LocalGuard} from "./guards/local.guard";
 import {Request, Response} from 'express';
 import {JwtAuthGuard} from "./guards/jwt.guard";
 import {CreateUserDto} from "../user/dto/create-user.dto";
 import {UserService} from "../user/user.service";
+import {AuthGuard} from "@nestjs/passport";
+import {UpdateUserDto} from "../user/dto/update-user.dto";
 
 @Controller()
 export class AuthenticationController {
     constructor(
         private authenticationService: AuthenticationService,
-        private userService: UserService
     ) {}
 
     @Post('register')
@@ -29,7 +30,6 @@ export class AuthenticationController {
     ) {
         await this.authenticationService.confirmRegistration(activationToken);
         res.status(HttpStatus.OK).json({ message: 'Votre inscription a été confirmée avec succès.' });
-        // return res.redirect('page d'accueil ou espace membre?);
     }
 
     @Post('login')
