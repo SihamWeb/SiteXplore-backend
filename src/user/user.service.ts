@@ -1,9 +1,7 @@
 import {BadRequestException, Injectable, InternalServerErrorException, NotFoundException} from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
 import {User} from "./entities/user.entity";
 import {MailService} from "../mail/mail.service";
-import {AuthenticationService} from "../authentication/authentication.service";
 import * as bcrypt from 'bcrypt';
 import {JwtService} from "@nestjs/jwt";
 import {InjectModel} from "@nestjs/sequelize";

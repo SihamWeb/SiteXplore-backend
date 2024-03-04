@@ -1,8 +1,6 @@
 import {
-    BadRequestException,
     Injectable,
-    InternalServerErrorException,
-    NotFoundException
+    InternalServerErrorException
 } from '@nestjs/common';
 import {AuthenticationPayloadDto} from "./dto/authentication.dto";
 import {JwtService} from "@nestjs/jwt";
@@ -24,21 +22,13 @@ export class AuthenticationService {
         private userService: UserService,
     ) {}
 
-    async isValidEmail(email: string): Promise<boolean> {
-        return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-    }
-
-    async isStrongPassword(password: string): Promise<boolean> {
-        return /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[\W_]).{8,}$/.test(password);
-    }
-
     async register(userData: CreateUserDto): Promise<string> {
         const { email, firstName, lastName, password } = userData;
 
         if (firstName){
             if (lastName){
                 if (email){
-                    if (!(await this.isValidEmail(email))) {
+                    if (!(await this.userService.isValidEmail(email))) {
                         return 'L\'adresse email n\'est pas valide.' ;
                     } else {
                         const excistUser = await User.findOne({ where: { email } });
@@ -46,7 +36,7 @@ export class AuthenticationService {
                             return 'Un utilisateur avec cet email existe déjà.' ;
                         } else {
                             if (password){
-                                if (!(await this.isStrongPassword(password))) {
+                                if (!(await this.userService.isStrongPassword(password))) {
                                     return 'Le mot de passe doit contenir minimum 8 caractères avec au moins une lettre n majuscule, une lettre minuscule, un chifre et un caractère spécial.' ;
                                 } else {
                                     const activationToken = this.jwtService.sign({ email, password, lastName, firstName });

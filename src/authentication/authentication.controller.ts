@@ -4,9 +4,6 @@ import {LocalGuard} from "./guards/local.guard";
 import {Request, Response} from 'express';
 import {JwtAuthGuard} from "./guards/jwt.guard";
 import {CreateUserDto} from "../user/dto/create-user.dto";
-import {UserService} from "../user/user.service";
-import {AuthGuard} from "@nestjs/passport";
-import {UpdateUserDto} from "../user/dto/update-user.dto";
 
 @Controller()
 export class AuthenticationController {

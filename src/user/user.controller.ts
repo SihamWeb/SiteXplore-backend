@@ -9,7 +9,7 @@ import {
 import { UserService } from './user.service';
 import { UpdateUserDto } from './dto/update-user.dto';
 import {AuthGuard} from "@nestjs/passport";
-import {Request, Response} from 'express';
+import {Response} from 'express';
 
 @Controller('user')
 export class UserController {
