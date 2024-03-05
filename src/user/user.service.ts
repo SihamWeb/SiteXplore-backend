@@ -25,6 +25,24 @@ export class UserService {
     return /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[\W_]).{8,}$/.test(password);
   }
 
+  // Get all users
+  async findAll(){
+    const users = await User.findAll();
+    if (users.length === 0) {
+      throw new Error('Aucun user trouvé');
+    }
+    return users;
+  }
+
+  // Get one user by id
+  async findOne(id: number) {
+    const user = await User.findByPk(id);
+    if (!user) {
+      throw new NotFoundException(`L'user avec Id #${id} non trouvé`);
+    }
+    return user;
+  }
+
   // Update lastConnection date each time when the user connect
   async updateLastConnection(userId: number) {
     const user = await User.findByPk(userId);

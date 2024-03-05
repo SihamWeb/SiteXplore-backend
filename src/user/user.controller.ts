@@ -4,7 +4,17 @@ import {
   Body,
   Patch,
   UseGuards,
-  HttpStatus, Res, Req, Query, Post, UseInterceptors, UploadedFile, BadRequestException, Delete
+  HttpStatus,
+  Res,
+  Req,
+  Query,
+  Post,
+  UseInterceptors,
+  UploadedFile,
+  BadRequestException,
+  Delete,
+  NotFoundException,
+  Param
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -20,6 +30,30 @@ interface FileParams {
 @Controller('user')
 export class UserController {
   constructor(private readonly userService: UserService) {}
+
+  // Get all users
+  @Get()
+  async findAll() {
+    try {
+      const users = await this.userService.findAll();
+      return users;
+    } catch (error) {
+      throw new NotFoundException('Il y a des erreurs dans la récupération de tous les utilisateurs');
+    }
+  }
+
+  // Get one user by id
+  @UseGuards(AuthGuard('jwt'))
+  @Get('me')
+  async findMe(@Req() req) {
+    try {
+      const userId = req.user.id;
+      const user = await this.userService.findOne(userId);
+      return user;
+    } catch (error) {
+      throw new NotFoundException(`Il y a des erreurs lors de la récupération de l'utilisateur connecté : ${error.message}`);
+    }
+  }
 
   //Users update their own informations
   @UseGuards(AuthGuard('jwt'))
