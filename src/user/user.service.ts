@@ -115,4 +115,36 @@ export class UserService {
       throw new InternalServerErrorException('Une erreur est survenue lors de la modification de l\'email.', decodedToken.emailOld);
     }
   }
+
+  async uploadProfilePicture (userId: number, profilePictureName : string) : Promise<User>{
+    const user = await User.findByPk(userId);
+    if (!user) {
+      throw new NotFoundException('Utilisateur non trouvé');
+    }
+
+    if (!user.profilePicture){
+      throw new BadRequestException('Aucune image n\'est saisie');
+    }
+
+    user.profilePicture = profilePictureName;
+
+    await user.save();
+
+    return user;
+  }
+
+  async deleteProfilePicture(userId: number): Promise<void> {
+    const user = await User.findByPk(userId);
+    if (!user) {
+      throw new NotFoundException('Utilisateur non trouvé');
+    }
+
+    if (!user.profilePicture) {
+      throw new BadRequestException('Aucune image de profil à supprimer');
+    }
+
+    user.profilePicture = null;
+
+    await user.save();
+  }
 }
