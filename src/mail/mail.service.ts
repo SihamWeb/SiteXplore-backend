@@ -38,4 +38,20 @@ export class MailService {
             },
         });
     }
+
+    async sendConfirmationForgottenPassword(userData: UpdateUserDto, activationToken: string) {
+        const url = `http://localhost:3000/update-forgotten-password?token=${activationToken}`;
+
+        console.log('User :', activationToken);
+
+        await this.mailerService.sendMail({
+            to: userData.email,
+            subject: 'Bienvenue chez SiteXplore ! Confirmez votre modification de mot de passe suite à un oubli !',
+            template: 'confirmation-forgotten-password',
+            context: {
+                email: userData.email,
+                url,
+            },
+        });
+    }
 }
