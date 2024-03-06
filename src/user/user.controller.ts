@@ -48,10 +48,23 @@ export class UserController {
   async findMe(@Req() req) {
     try {
       const userId = req.user.id;
-      const user = await this.userService.findOne(userId);
+      const user = await this.userService.findMe(userId);
       return user;
     } catch (error) {
       throw new NotFoundException(`Il y a des erreurs lors de la récupération de l'utilisateur connecté : ${error.message}`);
+    }
+  }
+
+  // Delete my account
+  @UseGuards(AuthGuard('jwt'))
+  @Delete('me')
+  async removeMe(@Req() req) {
+    try {
+      const userId = req.user.id;
+      const user = await this.userService.removeMe(userId);
+      return user;
+    } catch (error) {
+      throw new NotFoundException(`Il y a des erreurs lors de la suppression de l'utilisateur connecté : ${error.message}`);
     }
   }
 

@@ -35,12 +35,21 @@ export class UserService {
   }
 
   // Get one user by id
-  async findOne(id: number) {
+  async findMe(id: number) {
     const user = await User.findByPk(id);
     if (!user) {
       throw new NotFoundException(`L'user avec Id #${id} non trouvé`);
     }
     return user;
+  }
+
+  // Delete my account
+  async removeMe(id: number) {
+    const user = await User.destroy({ where: { id } });
+    if (!user) {
+      throw new NotFoundException(`L'user avec Id #${id} non trouvé`);
+    }
+    return `Suppression du compte réussie`;
   }
 
   // Update lastConnection date each time when the user connect
