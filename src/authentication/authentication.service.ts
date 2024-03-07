@@ -153,11 +153,12 @@ export class AuthenticationService {
 
     private async updatePasswordFromToken(decodedToken: any): Promise<void> {
         const { email, password } = decodedToken;
+        console.log(decodedToken);
 
         try {
             const user = await User.findOne({ where: { email } });
-            if (user) {
-                throw new NotFoundException('Utilisateur existe déjà');
+            if (!user) {
+                throw new NotFoundException('Utilisateur inexistant');
             }
 
             const hashedPassword = await bcrypt.hash(password, 10);
@@ -165,7 +166,7 @@ export class AuthenticationService {
 
             await user.save();
         } catch (e) {
-            throw new InternalServerErrorException('Une erreur est survenue lors de la modification de l\'email.', decodedToken.emailOld);
+            throw new InternalServerErrorException('Une erreur est survenue lors de la modification du mot de passe.', decodedToken.emailOld);
         }
     }
 
