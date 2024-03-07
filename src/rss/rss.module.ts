@@ -1,9 +1,15 @@
 import { Module } from '@nestjs/common';
 import { RssService } from './rss.service';
 import { RssController } from './rss.controller';
+import {Rss} from "./entities/rss.entity";
+import {SequelizeModule} from "@nestjs/sequelize";
 
 @Module({
-  controllers: [RssController],
-  providers: [RssService],
+    imports: [
+        SequelizeModule.forFeature([Rss]),
+    ],
+    controllers: [RssController],
+    providers: [RssService],
+    exports: [RssService]
 })
 export class RssModule {}

@@ -1,8 +1,8 @@
 import {Table, Column, Model, AutoIncrement, PrimaryKey, ForeignKey, BelongsTo} from 'sequelize-typescript';
 import {Media} from "../../media/entities/media.entity"
 
-@Table
-export class Rss extends Model {
+@Table({ tableName: 'article' })
+export class Rss extends Model<Rss> {
 
     @AutoIncrement
     @PrimaryKey
@@ -23,11 +23,11 @@ export class Rss extends Model {
     @Column
     link:string ;
 
-    @ForeignKey(() => Media)
+    /*@ForeignKey(() => Media)
     @Column
     media_id:number;
 
     @BelongsTo(() => Media)
-    media : Media
+    media : Media*/
 }
 

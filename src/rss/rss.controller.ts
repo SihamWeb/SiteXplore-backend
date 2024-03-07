@@ -7,7 +7,12 @@ import { UpdateRssDto } from './dto/update-rss.dto';
 export class RssController {
   constructor(private readonly rssService: RssService) {}
 
-  @Post()
+  @Post('create')
+  async create(): Promise<void>{
+    await this.rssService.create();
+  }
+
+  /*@Post()
   create(@Body() createRssDto: CreateRssDto) {
     return this.rssService.create(createRssDto);
   }
@@ -30,5 +35,5 @@ export class RssController {
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.rssService.remove(+id);
-  }
+  }*/
 }

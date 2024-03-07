@@ -6,6 +6,7 @@ import { SequelizeModule } from '@nestjs/sequelize';
 import { RssModule } from './rss/rss.module';
 import { MediaModule } from './media/media.module';
 import * as process from "process";
+import {Rss} from "./rss/entities/rss.entity";
 
 @Module({
   imports: [
@@ -17,7 +18,7 @@ import * as process from "process";
         username: process.env.DB_USER,
         password: process.env.DB_PASSWORD,
         database: process.env.DB_DATABASE,
-        models: [],
+        models: [Rss],
       }),
       RssModule,
       MediaModule,
