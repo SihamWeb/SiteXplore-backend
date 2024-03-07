@@ -64,19 +64,11 @@ export class UserService {
 
   //Users update their own informations
   async update(userId: number, updateData: Partial<CreateUserDto>): Promise<User> {
-    const { email, firstName, lastName, password, isAdmin } = updateData;
+    const { email, firstName, lastName, password } = updateData;
 
     const user = await User.findByPk(userId);
     if (!user) {
       throw new NotFoundException('Utilisateur non trouvé');
-    }
-
-    if ((updateData.isAdmin) && (typeof updateData.isAdmin !== 'boolean')){
-      throw new BadRequestException('Le champ isAdmin doit être un booléen');
-    }
-
-    if ((updateData.isAdmin) && (user.isAdmin === false)){
-      throw new NotFoundException('Vous ne disposez pas des droits requis pour gérer le rôle admin');
     }
 
     if (updateData.email) {
@@ -105,7 +97,7 @@ export class UserService {
       updateData.password = hashedPassword;
     }
 
-    Object.assign(user, { firstName, lastName, password: updateData.password, isAdmin });
+    Object.assign(user, { firstName, lastName, password: updateData.password });
     await user.save();
     return user;
   }
@@ -149,6 +141,25 @@ export class UserService {
     } catch (e) {
       throw new InternalServerErrorException('Une erreur est survenue lors de la modification de l\'email.', decodedToken.emailOld);
     }
+  }
+
+  async updateAdminRole(userId: number, isAdmin: boolean, reqesterId: number): Promise<void> {
+    const reqester = await this.userRepository.findByPk(reqesterId);
+    if (!reqester || !reqester.isAdmin) {
+      throw new BadRequestException('Vous ne disposez pas des autorisations nécessaires pour effectuer cette action.');
+    }
+
+    const userToUpdate = await this.userRepository.findByPk(userId);
+    if (!userToUpdate) {
+      throw new NotFoundException('Utilisateur à mettre à jour non trouvé.');
+    }
+
+    if (typeof isAdmin !== 'boolean') {
+      throw new BadRequestException('Le champ isAdmin doit être un booléean.');
+    }
+
+    userToUpdate.isAdmin = isAdmin;
+    await userToUpdate.save();
   }
 
   async uploadProfilePicture (userId: number, profilePictureName : string) : Promise<User>{

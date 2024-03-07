@@ -1,21 +1,4 @@
-import {
-  Controller,
-  Get,
-  Body,
-  Patch,
-  UseGuards,
-  HttpStatus,
-  Res,
-  Req,
-  Query,
-  Post,
-  UseInterceptors,
-  UploadedFile,
-  BadRequestException,
-  Delete,
-  NotFoundException,
-  Param
-} from '@nestjs/common';
+import {Controller, Get, Body, Patch, UseGuards, HttpStatus, Res, Req, Query, Post, UseInterceptors, UploadedFile, BadRequestException, Delete, NotFoundException, Param} from '@nestjs/common';
 import { UserService } from './user.service';
 import { UpdateUserDto } from './dto/update-user.dto';
 import {AuthGuard} from "@nestjs/passport";
@@ -76,6 +59,18 @@ export class UserController {
     const userId = req.user.id;
     await this.userService.update(userId, updateData);
     return { message: 'Informations utilisateur mises à jour avec succès', updateData};
+  }
+
+  // Admin
+  @UseGuards(AuthGuard('jwt'))
+  @Patch('admin/update-role/:userId')
+  async updateAdminRole(
+      @Param('userId') userId: number,
+      @Body() updateData: { isAdmin: boolean },
+      @Req() req,
+  ) {
+    const reqesterId = req.user.id;
+    return this.userService.updateAdminRole(userId, updateData.isAdmin, reqesterId);
   }
 
   // Upload profile picture
