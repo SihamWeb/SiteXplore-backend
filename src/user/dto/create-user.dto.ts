@@ -1,4 +1,4 @@
-import {IsEmail, IsNotEmpty, IsString, MinLength} from 'class-validator';
+import {IsBoolean, IsEmail, IsNotEmpty, IsString, MinLength} from 'class-validator';
 
 export class CreateUserDto {
 
@@ -39,4 +39,7 @@ export class CreateUserDto {
         message: 'Le mot de passe doit contenir minimum 8 caractères.',
     })
     password: string;
+
+    @IsBoolean()
+    isAdmin: boolean;
 }

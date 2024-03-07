@@ -64,11 +64,19 @@ export class UserService {
 
   //Users update their own informations
   async update(userId: number, updateData: Partial<CreateUserDto>): Promise<User> {
-    const { email, firstName, lastName, password } = updateData;
+    const { email, firstName, lastName, password, isAdmin } = updateData;
 
     const user = await User.findByPk(userId);
     if (!user) {
       throw new NotFoundException('Utilisateur non trouvé');
+    }
+
+    if ((updateData.isAdmin) && (typeof updateData.isAdmin !== 'boolean')){
+      throw new BadRequestException('Le champ isAdmin doit être un booléen');
+    }
+
+    if ((updateData.isAdmin) && (user.isAdmin === false)){
+      throw new NotFoundException('Vous ne disposez pas des droits requis pour gérer le rôle admin');
     }
 
     if (updateData.email) {
@@ -97,7 +105,7 @@ export class UserService {
       updateData.password = hashedPassword;
     }
 
-    Object.assign(user, { firstName, lastName, password: updateData.password });
+    Object.assign(user, { firstName, lastName, password: updateData.password, isAdmin });
     await user.save();
     return user;
   }
