@@ -85,6 +85,7 @@ export class AuthenticationService {
 
         try {
             await user.save();
+            await this.validateUser({ email, password });
         } catch (e) {
             throw new InternalServerErrorException('Une erreur est survenue lors de la création de l\'utilisateur.');
         }
@@ -104,7 +105,9 @@ export class AuthenticationService {
                     const userId = user.id;
                     await this.userService.updateLastConnection(userId);
 
-                    return this.jwtService.sign(userWithoutThePassword);
+                    const jwt = this.jwtService.sign(userWithoutThePassword);
+                    console.log(jwt);
+                    return jwt;
                 } else {
                     return 'Mot de passe incorrect';
                 }
