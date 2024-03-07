@@ -1,6 +1,6 @@
 import {
     Injectable,
-    InternalServerErrorException
+    InternalServerErrorException, NotFoundException
 } from '@nestjs/common';
 import {AuthenticationPayloadDto} from "./dto/authentication.dto";
 import {JwtService} from "@nestjs/jwt";
@@ -10,6 +10,7 @@ import * as bcrypt from 'bcrypt';
 import {InjectModel} from "@nestjs/sequelize";
 import {MailService} from "../mail/mail.service";
 import {UserService} from "../user/user.service";
+import {UpdateUserDto} from "../user/dto/update-user.dto";
 
 @Injectable()
 export class AuthenticationService {
@@ -112,4 +113,61 @@ export class AuthenticationService {
             }
         }
     }
+
+    async forgottenPassword(userData: UpdateUserDto): Promise<string> {
+        const { email, password } = userData;
+        const excistUser = await User.findOne({ where: { email } });
+
+        if (email){
+            if (!excistUser) {
+                return 'Aucun utilisateur avec cet adresse mail existe' ;
+            } else {
+                if (password){
+                    if (!(await this.userService.isStrongPassword(password))) {
+                        return 'Le mot de passe doit contenir minimum 8 caractères avec au moins une lettre n majuscule, une lettre minuscule, un chifre et un caractère spécial.' ;
+                    } else {
+                        const activationToken = this.jwtService.sign({ email, password});
+                        await this.mailService.sendConfirmationForgottenPassword(userData, activationToken);
+                        return 'Un email de confirmation a été envoyé avec succès';
+                    }
+                } else {
+                    return 'Aucun mot de passe renseigné' ;
+                }
+            }
+        } else {
+            return 'Aucun email renseigné' ;
+        }
+    }
+
+    async confirmForgottenPassword(activationToken: string): Promise<void> {
+        const decodedToken = this.jwtService.verify(activationToken);
+        const { email, password } = decodedToken;
+
+        const excistUser = await this.userRepository.findOne({ where: { email } });
+        if (!excistUser) {
+            throw new Error('Aucun utilisateur avec cet adresse mail existe');
+        }
+
+        await this.updatePasswordFromToken(decodedToken);
+    }
+
+    private async updatePasswordFromToken(decodedToken: any): Promise<void> {
+        const { email, password } = decodedToken;
+        console.log(decodedToken);
+
+        try {
+            const user = await User.findOne({ where: { email } });
+            if (!user) {
+                throw new NotFoundException('Utilisateur inexistant');
+            }
+
+            const hashedPassword = await bcrypt.hash(password, 10);
+            user.password = hashedPassword;
+
+            await user.save();
+        } catch (e) {
+            throw new InternalServerErrorException('Une erreur est survenue lors de la modification du mot de passe.', decodedToken.emailOld);
+        }
+    }
+
 }
