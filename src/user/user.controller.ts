@@ -63,7 +63,7 @@ export class UserController {
 
   // Admin
   @UseGuards(AuthGuard('jwt'))
-  @Patch('admin/update-role/:userId')
+  @Patch('admin/role/:userId')
   async updateAdminRole(
       @Param('userId') userId: number,
       @Body() updateData: { isAdmin: boolean },
@@ -71,6 +71,16 @@ export class UserController {
   ) {
     const reqesterId = req.user.id;
     return this.userService.updateAdminRole(userId, updateData.isAdmin, reqesterId);
+  }
+
+  @UseGuards(AuthGuard('jwt'))
+  @Delete('admin/:userId')
+  async deleteUser(
+      @Param('userId') userId: number,
+      @Req() req,
+  ) {
+    const reqesterId = req.user.id;
+    return this.userService.deleteUser(userId, reqesterId);
   }
 
   // Upload profile picture

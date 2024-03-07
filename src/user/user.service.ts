@@ -143,25 +143,6 @@ export class UserService {
     }
   }
 
-  async updateAdminRole(userId: number, isAdmin: boolean, reqesterId: number): Promise<void> {
-    const reqester = await this.userRepository.findByPk(reqesterId);
-    if (!reqester || !reqester.isAdmin) {
-      throw new BadRequestException('Vous ne disposez pas des autorisations nécessaires pour effectuer cette action.');
-    }
-
-    const userToUpdate = await this.userRepository.findByPk(userId);
-    if (!userToUpdate) {
-      throw new NotFoundException('Utilisateur à mettre à jour non trouvé.');
-    }
-
-    if (typeof isAdmin !== 'boolean') {
-      throw new BadRequestException('Le champ isAdmin doit être un booléean.');
-    }
-
-    userToUpdate.isAdmin = isAdmin;
-    await userToUpdate.save();
-  }
-
   async uploadProfilePicture (userId: number, profilePictureName : string) : Promise<User>{
     const user = await User.findByPk(userId);
     if (!user) {
@@ -192,5 +173,38 @@ export class UserService {
     user.profilePicture = null;
 
     await user.save();
+  }
+
+  // Admin
+  async updateAdminRole(userId: number, isAdmin: boolean, reqesterId: number): Promise<void> {
+    const reqester = await this.userRepository.findByPk(reqesterId);
+    if (!reqester || !reqester.isAdmin) {
+      throw new BadRequestException('Vous ne disposez pas des autorisations nécessaires pour effectuer cette action.');
+    }
+
+    const userToUpdate = await this.userRepository.findByPk(userId);
+    if (!userToUpdate) {
+      throw new NotFoundException('Utilisateur à mettre à jour non trouvé.');
+    }
+
+    if (typeof isAdmin !== 'boolean') {
+      throw new BadRequestException('Le champ isAdmin doit être un booléean.');
+    }
+
+    userToUpdate.isAdmin = isAdmin;
+    await userToUpdate.save();
+  }
+
+  async deleteUser(userId: number, reqesterId: number): Promise<void> {
+    const reqester = await this.userRepository.findByPk(reqesterId);
+    if (!reqester || !reqester.isAdmin) {
+      throw new BadRequestException('Vous ne disposez pas des autorisations nécessaires pour effectuer cette action.');
+    }
+
+    const userToDelete = await this.userRepository.findByPk(userId);
+    if (!userToDelete) {
+      throw new NotFoundException('Utilisateur à supprimer non trouvé.');
+    }
+    await userToDelete.destroy();
   }
 }
