@@ -79,6 +79,15 @@ export class UserController {
     return this.userService.findAll(reqesterId);
   }
 
+  @UseGuards(AuthGuard('jwt'))
+  @Get(':userId')
+  async findOne(
+      @Param('userId') userId: number,
+      @Req() req) {
+    const reqesterId = req.user.id;
+    return this.userService.findOne(userId, reqesterId);
+  }
+
   // Upload profile picture
   @UseGuards(AuthGuard('jwt'))
   @Patch('profile-picture')

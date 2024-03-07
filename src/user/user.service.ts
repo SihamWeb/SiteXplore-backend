@@ -211,4 +211,17 @@ export class UserService {
       return users;
     }
   }
+
+  async findOne(userId: number, reqesterId: number): Promise<User> {
+    const reqester = await this.userRepository.findByPk(reqesterId);
+    if (!reqester || !reqester.isAdmin) {
+      throw new BadRequestException('Vous ne disposez pas des autorisations nécessaires pour effectuer cette action.');
+    }
+
+    const user = await User.findByPk(userId);
+    if (!user) {
+      throw new NotFoundException(`L'user avec Id #${userId} non trouvé`);
+    }
+    return user;
+  }
 }
