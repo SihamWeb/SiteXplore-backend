@@ -25,15 +25,6 @@ export class UserService {
     return /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[\W_]).{8,}$/.test(password);
   }
 
-  // Get all users
-  async findAll(){
-    const users = await User.findAll();
-    if (users.length === 0) {
-      throw new Error('Aucun user trouvé');
-    }
-    return users;
-  }
-
   // Get one user by id
   async findMe(id: number) {
     const user = await User.findByPk(id);
@@ -206,5 +197,18 @@ export class UserService {
       throw new NotFoundException('Utilisateur à supprimer non trouvé.');
     }
     await userToDelete.destroy();
+  }
+
+  async findAll(reqesterId: number){
+    const reqester = await this.userRepository.findByPk(reqesterId);
+    if (!reqester || !reqester.isAdmin) {
+      throw new BadRequestException('Vous ne disposez pas des autorisations nécessaires pour effectuer cette action.');
+    } else {
+      const users = await User.findAll();
+      if (users.length === 0) {
+        throw new Error('Aucun user trouvé');
+      }
+      return users;
+    }
   }
 }

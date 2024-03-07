@@ -14,17 +14,6 @@ interface FileParams {
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
-  // Get all users
-  @Get()
-  async findAll() {
-    try {
-      const users = await this.userService.findAll();
-      return users;
-    } catch (error) {
-      throw new NotFoundException('Il y a des erreurs dans la récupération de tous les utilisateurs');
-    }
-  }
-
   // Get one user by id
   @UseGuards(AuthGuard('jwt'))
   @Get('me')
@@ -81,6 +70,13 @@ export class UserController {
   ) {
     const reqesterId = req.user.id;
     return this.userService.deleteUser(userId, reqesterId);
+  }
+
+  @UseGuards(AuthGuard('jwt'))
+  @Get()
+  async findAll(@Req() req) {
+    const reqesterId = req.user.id;
+    return this.userService.findAll(reqesterId);
   }
 
   // Upload profile picture
