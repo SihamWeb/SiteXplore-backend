@@ -1,4 +1,15 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  Query,
+  NotFoundException,
+  BadRequestException, HttpException, InternalServerErrorException
+} from '@nestjs/common';
 import { RssService } from './rss.service';
 import { CreateRssDto } from './dto/create-rss.dto';
 import { UpdateRssDto } from './dto/update-rss.dto';
@@ -10,6 +21,20 @@ export class RssController {
   @Post('create')
   async create(): Promise<void>{
     await this.rssService.create();
+  }
+
+  // Search bar
+  @Get('search')
+  async searchArticles(@Query('query') query: string) {
+    try {
+      const articles = await this.rssService.searchArticles(query);
+      return articles;
+    } catch (error) {
+      if (error instanceof NotFoundException || error instanceof BadRequestException) {
+        throw error;
+      }
+      throw new InternalServerErrorException('Une erreur est survenue lors de la recherche des articles.');
+    }
   }
 
   /*@Post()

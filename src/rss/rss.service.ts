@@ -1,6 +1,7 @@
-import { Injectable } from '@nestjs/common';
+import {BadRequestException, Injectable, NotFoundException} from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { Rss } from './entities/rss.entity';
+import {Op} from "sequelize";
 
 @Injectable()
 export class RssService {
@@ -54,5 +55,27 @@ export class RssService {
                 console.error('Erreur lors de l\'enregistrement dans la bas de donnée :', error);
             }
         }
+    }
+
+    // Search bar
+    async searchArticles(query: string): Promise<Rss[]> {
+        if (!query) {
+            throw new BadRequestException('Aucune recherche envoyée');
+        }
+
+        const articles = await this.rssModel.findAll({
+            where: {
+                [Op.or]: [
+                    { title: { [Op.like]: `%${query}%` } },
+                    { description: { [Op.like]: `%${query}%` } },
+                ],
+            },
+        });
+
+        if (!articles || articles.length === 0) {
+            throw new NotFoundException('Aucun article trouvé pour la recherche spécifiée.');
+        }
+
+        return articles;
     }
 }
