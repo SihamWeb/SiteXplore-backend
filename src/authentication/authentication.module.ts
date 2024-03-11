@@ -12,6 +12,7 @@ import * as process from "process";
 import { ConfigModule } from '@nestjs/config';
 import {MailerModule} from "@nestjs-modules/mailer";
 import {MailModule} from "../mail/mail.module";
+import {GoogleStrategy} from "./strategies/google.strategy";
 
 @Module({
     imports: [
@@ -29,7 +30,7 @@ import {MailModule} from "../mail/mail.module";
         })
     ],
     controllers: [AuthenticationController],
-    providers: [AuthenticationService, LocalStrategy, JwtStrategy],
+    providers: [AuthenticationService, LocalStrategy, JwtStrategy, GoogleStrategy],
     exports: [AuthenticationService]
 })
 export class AuthenticationModule {}

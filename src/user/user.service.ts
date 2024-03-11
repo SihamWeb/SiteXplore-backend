@@ -25,6 +25,10 @@ export class UserService {
     return /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[\W_]).{8,}$/.test(password);
   }
 
+  async findByEmail(email: string): Promise<User | undefined> {
+    return this.userRepository.findOne({ where: { email } });
+  }
+
   // Get all users
   async findAll(){
     const users = await User.findAll();

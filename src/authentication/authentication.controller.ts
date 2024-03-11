@@ -1,10 +1,25 @@
-import {Body, Controller, Get, HttpStatus, Post, Query, Req, Res, UseGuards, Patch} from '@nestjs/common';
+import {
+    Body,
+    Controller,
+    Get,
+    HttpStatus,
+    Post,
+    Query,
+    Req,
+    Res,
+    UseGuards,
+    Patch,
+    UnauthorizedException
+} from '@nestjs/common';
 import {AuthenticationService} from "./authentication.service";
 import {LocalGuard} from "./guards/local.guard";
 import {Request, Response} from 'express';
 import {JwtAuthGuard} from "./guards/jwt.guard";
 import {CreateUserDto} from "../user/dto/create-user.dto";
 import {UpdateUserDto} from "../user/dto/update-user.dto";
+import {AuthGuard} from "@nestjs/passport";
+import {CheckTokenExpiryGuard} from "./guards/authentication.guard";
+
 
 @Controller()
 export class AuthenticationController {
@@ -60,5 +75,43 @@ export class AuthenticationController {
     ) {
         await this.authenticationService.confirmForgottenPassword(activationToken);
         res.status(HttpStatus.OK).json({ message: 'Votre modification a été confirmée avec succès.' });
+    }
+
+    // help with https://blog.stackademic.com/integrating-google-login-with-nestjs-using-passport-js-0f25e02e503b
+
+    @Get('auth/google')
+    @UseGuards(AuthGuard('google'))
+    googleLogin() {}
+
+    @Get('auth/google/callback')
+    @UseGuards(AuthGuard('google'))
+    googleLoginCallback(@Req() req, @Res() res) {
+        const googleToken = req.user.accessToken;
+        const googleRefreshToken = req.user.refreshToken;
+
+        res.cookie('access_token', googleToken, { httpOnly: true });
+        res.cookie('refresh_token', googleRefreshToken, {
+            httpOnly: true,
+        });
+
+        res.redirect('http://localhost:3000/auth/google/profile');
+    }
+
+    @UseGuards(CheckTokenExpiryGuard)
+    @Get('auth/google/profile')
+    async getProfile(@Req() req) {
+        const accessToken = req.cookies['access_token'];
+        if (accessToken)
+            return (await this.authenticationService.getProfile(accessToken)).data;
+        throw new UnauthorizedException('No access token');
+    }
+
+    @Get('auth/google/logout')
+    logout(@Req() req, @Res() res: Response) {
+        const refreshToken = req.cookies['refresh_token'];
+        res.clearCookie('access_token');
+        res.clearCookie('refresh_token');
+        this.authenticationService.revokeGoogleToken(refreshToken);
+        res.redirect('http://localhost:3000/');
     }
 }
