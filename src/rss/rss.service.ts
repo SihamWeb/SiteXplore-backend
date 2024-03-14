@@ -129,7 +129,6 @@ export class RssService {
                 const data = await parser(url);
 
                 for (const item of data) {
-                    console.log(item);
                     /*console.log('#######################################');
                     console.log('Titre : ' + item.title);
                     console.log('Description : ' + item.description);
@@ -147,63 +146,59 @@ export class RssService {
                         const rss = await this.rssModel.create(rssData);
                         console.log('Enregistrement réussi dans la base de données');
 
-                        /*let authors = item.author;
-                        if (!authors || authors.length === 0) {
-                            authors = item.meta.author;
-                        }
+                        let liste_auteurs = (item.author !== null && item.author.length !== 0) ? item.author : item.meta.author ;
 
-                        if (authors && authors.length > 0) {
-                            for (const authorName of authors) {
-                                const fullName = authorName;
+                        if (liste_auteurs !== null) {
+                            if (liste_auteurs.length !== 0) {
+                                console.log(" - Auteur : " + liste_auteurs)
                                 let author = await this.authorModel.findOne({
-                                     where: {
-                                         name: fullName,
-                                     },
-                                 });
-
-                                 if (!author) {
-                                     author = await this.authorModel.create({
-                                         name: fullName,
-                                     });
-                                 }
-
-                                console.log('Auteur ajouté à la base de données :', fullName);
-
-                                 await this.articleAuthorModel.create({
-                                     article_id: rss.id,
-                                     author_id: author.id,
-                                 });
-                                console.log('Auteur lié à l\'article dans la base de données');
-                            }
-                        }*/
-
-                        let categories = item.categories;
-                        if (!categories || categories.length === 0) {
-                            categories = item.meta.categories;
-                        }
-
-                        if (categories && categories.length > 0) {
-                            for (const categoriesName of categories) {
-                                const fullName = categoriesName;
-                                let category = await this.categoryModel.findOne({
                                     where: {
-                                        name: fullName,
+                                        name: liste_auteurs,
                                     },
                                 });
 
-                                if (!category) {
-                                    category = await this.categoryModel.create({
-                                        name: fullName,
+                                if (!author) {
+                                    author = await this.authorModel.create({
+                                        name: liste_auteurs,
                                     });
                                 }
 
-                                console.log('Auteur ajouté à la base de données :', fullName);
+                                console.log('Auteur ajouté à la base de données :', liste_auteurs);
 
-                                await this.articleCategoryModel.create({
+                                await this.articleAuthorModel.create({
                                     article_id: rss.id,
-                                    category_id: category.id,
+                                    author_id: author.id,
                                 });
-                                console.log('Category lié à l\'article dans la base de données');
+                                console.log('Auteur lié à l\'article dans la base de données');
+                            }
+                        }
+
+                        let liste_categories = (item.categories.length !== 0 ? item.categories : item.meta.categories) ;
+
+                        if (liste_categories !== null) {
+                            if (liste_categories.length !== 0) {
+                                for (let i = 0; i < liste_categories.length; i++) {
+                                    console.log(" - Catégories : " + liste_categories[i])
+                                    let category = await this.categoryModel.findOne({
+                                        where: {
+                                            name: liste_categories,
+                                        },
+                                    });
+
+                                    if (!category) {
+                                        category = await this.categoryModel.create({
+                                            name: liste_categories,
+                                        });
+                                    }
+
+                                    console.log('Auteur ajouté à la base de données :', liste_categories);
+
+                                    await this.articleCategoryModel.create({
+                                        article_id: rss.id,
+                                        category_id: category.id,
+                                    });
+                                    console.log('Category lié à l\'article dans la base de données');
+                                }
                             }
                         }
 
