@@ -4,6 +4,9 @@ import { Rss } from './entities/rss.entity';
 import {Op} from "sequelize";
 import {ArticleAuthor} from "./entities/article-author.entity";
 import {Author} from "./entities/author.entity";
+import {Category} from "./entities/category.entity";
+import {ArticleCategory} from "./entities/article-category.entity";
+import {Media} from "./entities/media.entity";
 
 @Injectable()
 export class RssService {
@@ -14,6 +17,12 @@ export class RssService {
         private readonly authorModel: typeof Author,
         @InjectModel(ArticleAuthor)
         private readonly articleAuthorModel: typeof ArticleAuthor,
+        @InjectModel(Category)
+        private readonly categoryModel: typeof Category,
+        @InjectModel(ArticleCategory)
+        private readonly articleCategoryModel: typeof ArticleCategory,
+        @InjectModel(Media)
+        private mediaModel: typeof Media
     ) {}
 
     /*async create(): Promise<void> {
@@ -120,11 +129,12 @@ export class RssService {
                 const data = await parser(url);
 
                 for (const item of data) {
-                    console.log('#######################################');
+                    console.log(item);
+                    /*console.log('#######################################');
                     console.log('Titre : ' + item.title);
                     console.log('Description : ' + item.description);
                     console.log('Date de publication : ' + item.pubDate);
-                    console.log('Lien : ' + item.link);
+                    console.log('Lien : ' + item.link);*/
 
                     const rssData: any = {};
 
@@ -137,7 +147,7 @@ export class RssService {
                         const rss = await this.rssModel.create(rssData);
                         console.log('Enregistrement réussi dans la base de données');
 
-                        let authors = item.author;
+                        /*let authors = item.author;
                         if (!authors || authors.length === 0) {
                             authors = item.meta.author;
                         }
@@ -165,7 +175,38 @@ export class RssService {
                                  });
                                 console.log('Auteur lié à l\'article dans la base de données');
                             }
+                        }*/
+
+                        let categories = item.categories;
+                        if (!categories || categories.length === 0) {
+                            categories = item.meta.categories;
                         }
+
+                        if (categories && categories.length > 0) {
+                            for (const categoriesName of categories) {
+                                const fullName = categoriesName;
+                                let category = await this.categoryModel.findOne({
+                                    where: {
+                                        name: fullName,
+                                    },
+                                });
+
+                                if (!category) {
+                                    category = await this.categoryModel.create({
+                                        name: fullName,
+                                    });
+                                }
+
+                                console.log('Auteur ajouté à la base de données :', fullName);
+
+                                await this.articleCategoryModel.create({
+                                    article_id: rss.id,
+                                    category_id: category.id,
+                                });
+                                console.log('Category lié à l\'article dans la base de données');
+                            }
+                        }
+
                     } else {
                         console.log('Aucune donnée à enregistrer dans la base de données');
                     }
@@ -175,6 +216,7 @@ export class RssService {
             }
         }
     }
+
 
 
     // Search bar

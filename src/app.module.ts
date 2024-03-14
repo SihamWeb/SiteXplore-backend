@@ -9,6 +9,9 @@ import * as process from "process";
 import {Rss} from "./rss/entities/rss.entity";
 import {Author} from "./rss/entities/author.entity";
 import {ArticleAuthor} from "./rss/entities/article-author.entity";
+import {Category} from "./rss/entities/category.entity";
+import {ArticleCategory} from "./rss/entities/article-category.entity";
+import {Media} from "./rss/entities/media.entity";
 
 @Module({
   imports: [
@@ -20,7 +23,7 @@ import {ArticleAuthor} from "./rss/entities/article-author.entity";
         username: process.env.DB_USER,
         password: process.env.DB_PASSWORD,
         database: process.env.DB_DATABASE,
-        models: [Rss, Author, ArticleAuthor],
+        models: [Rss, Author, ArticleAuthor, Category, ArticleCategory, Media],
       }),
       RssModule,
       MediaModule,
