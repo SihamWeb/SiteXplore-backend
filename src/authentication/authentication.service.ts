@@ -60,7 +60,7 @@ export class AuthenticationService {
         }
     }
 
-    async confirmRegistration(activationToken: string): Promise<void> {
+    async confirmRegistration(activationToken: string): Promise<{ message: string; token: string }> {
         const decodedToken = this.jwtService.verify(activationToken);
         const { email, password, lastName, firstName } = decodedToken;
 
@@ -70,6 +70,13 @@ export class AuthenticationService {
         }
 
         await this.createUserFromToken(decodedToken);
+
+        const token = this.jwtService.sign({ email, password, lastName, firstName });
+        console.log('confirmRegistration token : ' + token);
+        return {
+            message: 'Inscription confirmée avec succès',
+            token: token
+        };
     }
 
     private async createUserFromToken(decodedToken: any): Promise<void> {
@@ -84,35 +91,53 @@ export class AuthenticationService {
         user.firstName = firstName;
 
         try {
-            await user.save();
+            await user.save()
+            await this.validateUser({email, password});
         } catch (e) {
             throw new InternalServerErrorException('Une erreur est survenue lors de la création de l\'utilisateur.');
         }
     }
 
     async validateUser({ email, password }: AuthenticationPayloadDto) {
+        if (!email) {
+            return {
+                error : 'Aucun email renseigné'
+            };
+        }
+
         const user = await User.findOne({ where: { email } });
 
         if (!user) {
-            return 'Utilisateur introuvable' ;
+            return {
+                error : 'Utilisateur introuvable'
+            };
         } else {
-            if (password){
+            if (password) {
                 const comparePassword = await bcrypt.compare(password, user.password);
                 if (comparePassword) {
                     const { password, ...userWithoutThePassword } = user.toJSON();
 
                     const userId = user.id;
                     await this.userService.updateLastConnection(userId);
+                    console.log('Connexion réussie');
 
-                    return this.jwtService.sign(userWithoutThePassword);
+                    return {
+                        message: 'Connexion avec succès',
+                        token: this.jwtService.sign(userWithoutThePassword)
+                    };
                 } else {
-                    return 'Mot de passe incorrect';
+                    return {
+                        error : 'Mot de passe incorrect'
+                    };
                 }
             } else {
-                return 'Aucun mot de passe renseigné' ;
+                return {
+                    error : 'Aucun mot de passe renseigné'
+                };
             }
         }
     }
+
 
     async forgottenPassword(userData: UpdateUserDto): Promise<string> {
         const { email, password } = userData;

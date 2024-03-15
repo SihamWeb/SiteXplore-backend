@@ -27,14 +27,17 @@ export class AuthenticationController {
         @Res() res: Response
     ) {
         await this.authenticationService.confirmRegistration(activationToken);
-        res.status(HttpStatus.OK).json({ message: 'Votre inscription a été confirmée avec succès.' });
+        res.redirect('http://localhost:4200/mon-compte');
     }
 
     @Post('login')
     @UseGuards(LocalGuard)
-    login(@Req() req: Request) {
-        return req.user;
+    async login(@Req() req: Request, @Res() res: Response) {
+        const { email, password } = req.body;
+        const message = await this.authenticationService.validateUser({ email, password });
+        res.status(HttpStatus.CREATED).json({ message });
     }
+
 
     @Get('status')
     @UseGuards(JwtAuthGuard)
