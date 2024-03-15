@@ -34,7 +34,7 @@ var typeOf = require('typeof');
             console.log('#######################################');
 
             // Auteurs
-            let liste_auteurs = (item.author !== null && item.author.length !== 0) ? item.author : item.meta.author ;
+           /* let liste_auteurs = (item.author !== null && item.author.length !== 0) ? item.author : item.meta.author ;
 
             if (liste_auteurs !== null) {
                 if (liste_auteurs.length !== 0) {
@@ -62,17 +62,14 @@ var typeOf = require('typeof');
                         (item.image.url) ? console.log(" - Image : " + item.image.url) : console.log('') ;
 
                         // Image (ou media audio) enclosure
-                        (item['rss:enclosure']) ? console.log(" - URL media : " + (item['rss:enclosure']['@']['url'])) : console.log('') ;
+                        (item['rss:enclosure']) ? console.log(" - URL media : " + (item['rss:enclosure']['@']['url'])) : console.log('') ;*/
 
                         // Media content
                          if (item['media:content']) {
-                        let image = ['media:description', 'media:credit', '@'];
-                            for (let i = 0; i < image.length; i++) {
-                                if (item['media:content'][image[i]]) {
-                                    console.log(" - Image : " + ((image[i] === '@') ? (image[i] + ' : ' + item['media:content'][image[i]].url) : (image[i] + ' : ' + item['media:content'][image[i]]['#'])) );
-                                    }
-                                }
-                            }
+                            console.log(item['media:content']['@'] ? item['media:content']['@'].url : '');
+                            console.log (item['media:content']['media:description'] ? item['media:content']['media:description']['#'] : '');
+                            console.log (item['media:content']['media:credit'] ? item['media:content']['media:credit']['#'] : '');
+                         }
 
         });
     }
