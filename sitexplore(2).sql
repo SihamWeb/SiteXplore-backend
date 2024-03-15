@@ -338,7 +338,7 @@ CREATE TABLE IF NOT EXISTS `user` (
   `firstName` varchar(60) COLLATE utf8mb4_general_ci NOT NULL,
   `lastName` varchar(60) COLLATE utf8mb4_general_ci NOT NULL,
   `email` varchar(255) COLLATE utf8mb4_general_ci NOT NULL,
-  `isAdmin` tinyint(1) NOT NULL,
+  `isAdmin` tinyint(1) NOT NULL DEFAULT 0,
   `password` varchar(255) COLLATE utf8mb4_general_ci NOT NULL,
   `profilePicture` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL,
   `lastConnection` datetime DEFAULT NULL,
