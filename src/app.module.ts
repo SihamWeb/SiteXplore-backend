@@ -11,6 +11,14 @@ import { MailModule } from './mail/mail.module';
 import {HandlebarsAdapter} from "@nestjs-modules/mailer/dist/adapters/handlebars.adapter";
 import {MailerModule} from "@nestjs-modules/mailer";
 import path from "path";
+import { RssModule } from './rss/rss.module';
+import { MediaModule } from './media/media.module';
+import {Rss} from "./rss/entities/rss.entity";
+import {Author} from "./rss/entities/author.entity";
+import {ArticleAuthor} from "./rss/entities/article-author.entity";
+import {Category} from "./rss/entities/category.entity";
+import {ArticleCategory} from "./rss/entities/article-category.entity";
+import {Media} from "./rss/entities/media.entity";
 
 @Module({
     imports: [
@@ -24,8 +32,18 @@ import path from "path";
             username: process.env.DB_USER,
             password: process.env.DB_PASSWORD,
             database: process.env.DB_DATABASE,
-            models: [User],
+            models: [
+              User, 
+              Rss, 
+              Author, 
+              ArticleAuthor, 
+              Category, 
+              ArticleCategory, 
+              Media
+            ],
         }),
+        RssModule,
+        MediaModule
         AuthenticationModule,
         UserModule,
         MailModule,
