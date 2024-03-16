@@ -1,21 +1,4 @@
-import {
-  Controller,
-  Get,
-  Body,
-  Patch,
-  UseGuards,
-  HttpStatus,
-  Res,
-  Req,
-  Query,
-  Post,
-  UseInterceptors,
-  UploadedFile,
-  BadRequestException,
-  Delete,
-  NotFoundException,
-  Param
-} from '@nestjs/common';
+import {Controller, Get, Body, Patch, UseGuards, HttpStatus, Res, Req, Query, Post, UseInterceptors, UploadedFile, BadRequestException, Delete, NotFoundException, Param} from '@nestjs/common';
 import { UserService } from './user.service';
 import { UpdateUserDto } from './dto/update-user.dto';
 import {AuthGuard} from "@nestjs/passport";
@@ -30,17 +13,6 @@ interface FileParams {
 @Controller('user')
 export class UserController {
   constructor(private readonly userService: UserService) {}
-
-  // Get all users
-  @Get()
-  async findAll() {
-    try {
-      const users = await this.userService.findAll();
-      return users;
-    } catch (error) {
-      throw new NotFoundException('Il y a des erreurs dans la récupération de tous les utilisateurs');
-    }
-  }
 
   // Get one user by id
   @UseGuards(AuthGuard('jwt'))
@@ -76,6 +48,44 @@ export class UserController {
     const userId = req.user.id;
     await this.userService.update(userId, updateData);
     return { message: 'Informations utilisateur mises à jour avec succès', updateData};
+  }
+
+  // Admin
+  @UseGuards(AuthGuard('jwt'))
+  @Patch('admin/role/:userId')
+  async updateAdminRole(
+      @Param('userId') userId: number,
+      @Body() updateData: { isAdmin: boolean },
+      @Req() req,
+  ) {
+    const reqesterId = req.user.id;
+    return this.userService.updateAdminRole(userId, updateData.isAdmin, reqesterId);
+  }
+
+  @UseGuards(AuthGuard('jwt'))
+  @Delete('admin/:userId')
+  async deleteUser(
+      @Param('userId') userId: number,
+      @Req() req,
+  ) {
+    const reqesterId = req.user.id;
+    return this.userService.deleteUser(userId, reqesterId);
+  }
+
+  @UseGuards(AuthGuard('jwt'))
+  @Get()
+  async findAll(@Req() req) {
+    const reqesterId = req.user.id;
+    return this.userService.findAll(reqesterId);
+  }
+
+  @UseGuards(AuthGuard('jwt'))
+  @Get(':userId')
+  async findOne(
+      @Param('userId') userId: number,
+      @Req() req) {
+    const reqesterId = req.user.id;
+    return this.userService.findOne(userId, reqesterId);
   }
 
   // Upload profile picture

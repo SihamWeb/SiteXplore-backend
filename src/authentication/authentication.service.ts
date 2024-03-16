@@ -92,7 +92,7 @@ export class AuthenticationService {
 
         try {
             await user.save();
-            await this.validateUser({email, password});
+            await this.validateUser({ email, password });
         } catch (e) {
             throw new InternalServerErrorException(e);
             //throw new InternalServerErrorException('Une erreur est survenue lors de la création de l\'utilisateur.');
