@@ -19,6 +19,7 @@ import {ArticleAuthor} from "./rss/entities/article-author.entity";
 import {Category} from "./rss/entities/category.entity";
 import {ArticleCategory} from "./rss/entities/article-category.entity";
 import {Media} from "./rss/entities/media.entity";
+import {ScheduleModule} from "@nestjs/schedule";
 
 @Module({
     imports: [
@@ -42,8 +43,9 @@ import {Media} from "./rss/entities/media.entity";
               Media
             ],
         }),
+        ScheduleModule.forRoot(),
         RssModule,
-        MediaModule
+        MediaModule,
         AuthenticationModule,
         UserModule,
         MailModule,

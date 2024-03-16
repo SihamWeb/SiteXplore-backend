@@ -7,6 +7,7 @@ import {Author} from "./entities/author.entity";
 import {Category} from "./entities/category.entity";
 import {ArticleCategory} from "./entities/article-category.entity";
 import {Media} from "./entities/media.entity";
+import {Cron} from "@nestjs/schedule";
 
 @Injectable()
 export class RssService {
@@ -25,10 +26,8 @@ export class RssService {
         private mediaModel: typeof Media
     ) {}
 
-
+    @Cron('0 8 * * *')
     async create(): Promise<void> {
-
-
 
         await this.articleAuthorModel.destroy({truncate: true, restartIdentity: true});
         await this.articleCategoryModel.destroy({truncate: true, restartIdentity: true});
@@ -90,10 +89,8 @@ export class RssService {
 
                          let liste_auteurs = (item.author !== null && item.author.length !== 0) ? item.author : item.meta.author ;
 
-                         //console.log(liste_auteurs);
                        if (liste_auteurs !== null) {
                              if (liste_auteurs.length !== 0) {
-                                 //console.log(" - Auteur : " + liste_auteurs)
                                  let author = await this.authorModel.findOne({
                                      where: {
                                          name: liste_auteurs,
@@ -106,23 +103,18 @@ export class RssService {
                                      });
                                  }
 
-                                 //console.log('Auteur ajouté à la base de données :', liste_auteurs);
-
                                  await this.articleAuthorModel.create({
                                      article_id: rss.id,
                                      author_id: author.id,
                                  });
-                                 //console.log('Auteur lié à l\'article dans la base de données');
                              }
                          }
 
                         let liste_categories = (item.categories.length !== 0 ? item.categories : item.meta.categories) ;
 
-                       //console.log(liste_categories);
                         if (liste_categories !== null) {
                             if (liste_categories.length !== 0) {
                                 for (let i = 0; i < liste_categories.length; i++) {
-                                    //console.log(" - Catégories : " + liste_categories[i])
                                     let category = await this.categoryModel.findOne({
                                         where: {
                                             name: liste_categories[i],
@@ -135,13 +127,10 @@ export class RssService {
                                         });
                                     }
 
-                                    //console.log('Category ajouté à la base de données :', liste_categories);
-
                                     await this.articleCategoryModel.create({
                                         article_id: rss.id,
                                         category_id: category.id,
                                     });
-                                    //console.log('Category lié à l\'article dans la base de données');
                                 }
                             }
                         }

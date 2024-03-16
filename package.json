@@ -20,7 +20,6 @@
     "test:e2e": "jest --config ./test/jest-e2e.json"
   },
   "dependencies": {
-
     "@extractus/feed-extractor": "^7.0.9",
     "@nestjs-modules/mailer": "^1.11.2",
     "@nestjs/common": "^10.0.0",
@@ -30,6 +29,7 @@
     "@nestjs/mapped-types": "*",
     "@nestjs/passport": "^10.0.3",
     "@nestjs/platform-express": "^10.3.3",
+    "@nestjs/schedule": "^4.0.1",
     "@nestjs/sequelize": "^10.0.1",
     "@types/escape-html": "^1.0.4",
     "bcrypt": "^5.1.1",
@@ -39,8 +39,8 @@
     "mailgun-js": "^0.22.0",
     "mysql2": "^3.9.2",
     "node-split": "^1.0.1",
-    "parser": "^0.1.4",
     "nodemailer": "^6.9.12",
+    "parser": "^0.1.4",
     "passport": "^0.7.0",
     "passport-jwt": "^4.0.1",
     "passport-local": "^1.0.0",
