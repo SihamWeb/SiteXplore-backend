@@ -16,7 +16,9 @@ import { UpdateRssDto } from './dto/update-rss.dto';
 
 @Controller('rss')
 export class RssController {
-  constructor(private readonly rssService: RssService) {}
+  constructor(
+      private readonly rssService: RssService
+  ) {}
 
   @Post('create')
   async create(): Promise<void>{
@@ -34,6 +36,36 @@ export class RssController {
         throw error;
       }
       throw new InternalServerErrorException('Une erreur est survenue lors de la recherche des articles.');
+    }
+  }
+
+  @Get()
+  async findAll() {
+    try {
+      const articles = await this.rssService.findAll();
+      return articles;
+    } catch (error) {
+      throw new NotFoundException('Il y a des erreurs dans la récupération de tous les articles');
+    }
+  }
+
+  @Get('authors')
+  async findAllAuthors() {
+    try {
+      const authors = await this.rssService.findAllAuthors();
+      return authors;
+    } catch (error) {
+      throw new NotFoundException('Il y a des erreurs dans la récupération de tous les auteurs');
+    }
+  }
+
+  @Get('categories')
+  async findAllCategories() {
+    try {
+      const categories = await this.rssService.findAllCategories();
+      return categories;
+    } catch (error) {
+      throw new NotFoundException('Il y a des erreurs dans la récupération de toutes les catégories');
     }
   }
 

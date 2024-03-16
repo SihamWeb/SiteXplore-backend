@@ -26,7 +26,7 @@ export class RssService {
         private mediaModel: typeof Media
     ) {}
 
-    @Cron('0 8 * * *')
+    //@Cron('0 8 * * *')
     async create(): Promise<void> {
 
         await this.articleAuthorModel.destroy({truncate: true, restartIdentity: true});
@@ -144,8 +144,6 @@ export class RssService {
         }
     }
 
-
-
     // Search bar
     async searchArticles(query: string): Promise<Rss[]> {
         if (!query) {
@@ -166,5 +164,29 @@ export class RssService {
         }
 
         return articles;
+    }
+
+    async findAll(){
+        const articles = await Rss.findAll();
+        if (articles.length === 0) {
+            throw new Error('Aucun article trouvé');
+        }
+        return articles;
+    }
+
+    async findAllAuthors(){
+        const authors = await Author.findAll();
+        if (authors.length === 0) {
+            throw new Error('Aucun auteur trouvé');
+        }
+        return authors;
+    }
+
+    async findAllCategories(){
+        const categories = await Category.findAll();
+        if (categories.length === 0) {
+            throw new Error('Aucune categorie trouvé');
+        }
+        return categories;
     }
 }
