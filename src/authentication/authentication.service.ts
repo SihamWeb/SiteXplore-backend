@@ -95,7 +95,6 @@ export class AuthenticationService {
             await this.validateUser({ email, password });
         } catch (e) {
             throw new InternalServerErrorException(e);
-            //throw new InternalServerErrorException('Une erreur est survenue lors de la création de l\'utilisateur.');
         }
     }
 
@@ -110,7 +109,7 @@ export class AuthenticationService {
 
         if (!user) {
             return {
-                error : 'Utilisateur introuvable'
+                error : 'Identifiants invalides'
             };
         } else {
             if (password) {
@@ -128,7 +127,7 @@ export class AuthenticationService {
                     };
                 } else {
                     return {
-                        error : 'Mot de passe incorrect'
+                        error : 'Identifiants invalides'
                     };
                 }
             } else {
@@ -184,7 +183,7 @@ export class AuthenticationService {
         try {
             const user = await User.findOne({ where: { email } });
             if (!user) {
-                throw new NotFoundException('Utilisateur inexistant');
+                throw new NotFoundException('Identifiants invalides');
             }
 
             const hashedPassword = await bcrypt.hash(password, 10);
@@ -192,7 +191,7 @@ export class AuthenticationService {
 
             await user.save();
         } catch (e) {
-            throw new InternalServerErrorException('Une erreur est survenue lors de la modification du mot de passe.', decodedToken.emailOld);
+            throw new InternalServerErrorException(e, decodedToken.emailOld);
         }
     }
 
