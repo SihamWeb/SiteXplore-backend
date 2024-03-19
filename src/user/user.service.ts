@@ -5,7 +5,8 @@ import {MailService} from "../mail/mail.service";
 import * as bcrypt from 'bcrypt';
 import {JwtService} from "@nestjs/jwt";
 import {InjectModel} from "@nestjs/sequelize";
-
+import * as moment from 'moment';
+import {Cron} from "@nestjs/schedule";
 
 @Injectable()
 export class UserService {
@@ -223,5 +224,56 @@ export class UserService {
       throw new NotFoundException(`L'user avec Id #${userId} non trouvé`);
     }
     return user;
+  }
+
+  @Cron('0 8 * * 1')
+  async deleteInactiveUsers(): Promise<string> {
+    const users = await this.userRepository.findAll();
+
+    const beginReminder = moment()
+        .subtract(2, 'years')
+        .subtract(1, 'days');
+    const warningExpiredSoon = moment()
+        .subtract(2, 'years')
+        .add(2, 'weeks');
+    let countWarning = 0;
+
+    const expiredAccount = moment()
+        .subtract(2, 'years')
+        .toDate();
+    let countExpired = 0;
+
+    for (const user of users) {
+      if (moment(user.lastConnection).isBetween(warningExpiredSoon, beginReminder)) {
+        console.log(warningExpiredSoon);
+        console.log(beginReminder);
+        await this.mailService.sendReminderInactiveAccount(user);
+        countWarning++;
+        continue;
+      }
+
+      if (moment(user.lastConnection).isBefore(expiredAccount)) {
+        await this.mailService.sendDeleteInactiveAccount(user);
+        await this.userRepository.destroy({ where: { id: user.id } });
+        console.log(expiredAccount);
+        countExpired++;
+      }
+    }
+
+    if (countWarning === 0 && countExpired === 0) {
+      const message = 'Aucun utilisateur à traiter.';
+      console.log(message);
+      return message;
+    }
+
+    let message = '';
+    if (countWarning > 0) {
+      message += `${countWarning} utilisateur(s) rappelé(s). `;
+    }
+    if (countExpired > 0) {
+      message += `${countExpired} utilisateur(s) supprimé(s).`;
+    }
+    console.log(message);
+    return message;
   }
 }
