@@ -70,7 +70,7 @@ export class UserService {
 
         const existingUser = await User.findOne({ where: { email: updateData.email } });
         if (existingUser) {
-          throw new BadRequestException('Un utilisateur avec cet email existe déjà');
+          throw new BadRequestException('Un utilisateur avec cet email existe déjà.');
         }
 
         await this.updateEmail(user.email, updateData.email);
@@ -107,7 +107,7 @@ export class UserService {
 
     const excistUser = await this.userRepository.findOne({ where: { email } });
     if (excistUser) {
-      throw new Error('L\'utilisateur existe déjà.');
+      throw new Error('Un utilisateur avec cet email existe déjà.');
     }
 
     await this.updateEmailFromToken(decodedToken);
@@ -130,7 +130,7 @@ export class UserService {
 
       await user.save();
     } catch (e) {
-      throw new InternalServerErrorException('Une erreur est survenue lors de la modification de l\'email.', decodedToken.emailOld);
+      throw new InternalServerErrorException(e, decodedToken.emailOld);
     }
   }
 
