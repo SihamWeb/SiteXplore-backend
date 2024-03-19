@@ -2,7 +2,6 @@
 
 
 let map = L.map('map').setView([46.942135, 2.722939], 6);
-alert ('bjr') ;
 
 let Stadia_StamenTonerLite = L.tileLayer('https://tiles.stadiamaps.com/tiles/stamen_toner_lite/{z}/{x}/{y}{r}.{ext}', {
     minZoom: 0,
@@ -11,11 +10,6 @@ let Stadia_StamenTonerLite = L.tileLayer('https://tiles.stadiamaps.com/tiles/sta
     ext: 'png'
 });
 Stadia_StamenTonerLite.addTo(map);
-
-
-let imageUrl = '/',
-    imageBounds = [[-40.712216, -74.22655], [40.773941, 74.12544]];
-L.imageOverlay(imageUrl, imageBounds).addTo(map);
 
 // Ajout des coordonnées géographiques
 
@@ -1901,11 +1895,9 @@ let city_list = [
     'Strasbourg'
 ] ;
 
-
 let markers = new L.MarkerClusterGroup();
 
 for (let i = 0; i < location_list.length; i++) {
-    console.log(i);
     let popup = L.popup()
         .setLatLng(location_list[i])
         .setContent(description_list[i] + '<br>' + city_list[i]);
@@ -1915,3 +1907,20 @@ for (let i = 0; i < location_list.length; i++) {
     markers.addLayer(marker);
 }
 map.addLayer(markers);
+
+let regions = L.geoJSON(RegionsGeoJSONdata) ;
+let departements = L.geoJSON(DepartementsGeoJSONdata) ;
+regions.addTo(map) ;
+departements.addTo(map) ;
+
+baseLayer = {
+    'Sites archeologiques' : markers
+}
+
+otherLayers = {
+    'Regions francaises' : regions,
+    'Departements francais' : departements
+}
+
+L.control.layers(baseLayer, otherLayers).addTo(map) ;
+L.control.scale().addTo(map);
