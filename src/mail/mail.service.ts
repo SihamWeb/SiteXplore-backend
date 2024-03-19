@@ -54,4 +54,32 @@ export class MailService {
             },
         });
     }
+
+    async sendReminderInactiveAccount(user: UpdateUserDto) {
+
+        await this.mailerService.sendMail({
+            to: user.email,
+            subject: 'Compte inactif bientôt supprimé !',
+            template: 'reminder-inactive-account',
+            context: {
+                email: user.email,
+                firstName: user.firstName,
+                lastName: user.lastName
+            },
+        });
+    }
+
+    async sendDeleteInactiveAccount(userData: UpdateUserDto) {
+
+        await this.mailerService.sendMail({
+            to: userData.email,
+            subject: 'Compte inactif supprimé !',
+            template: 'delete-inactive-account',
+            context: {
+                email: userData.email,
+                firstName: userData.firstName,
+                lastName: userData.lastName
+            },
+        });
+    }
 }
