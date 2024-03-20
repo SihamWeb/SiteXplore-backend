@@ -21,6 +21,8 @@ import {ArticleCategory} from "./rss/entities/article-category.entity";
 import {Media} from "./rss/entities/media.entity";
 import {ScheduleModule} from "@nestjs/schedule";
 import { ContactModule } from './contact/contact.module';
+import { LocationModule } from './location/location.module';
+
 
 @Module({
     imports: [
@@ -51,6 +53,7 @@ import { ContactModule } from './contact/contact.module';
         UserModule,
         MailModule,
         ContactModule,
+        LocationModule,
     ],
     controllers: [AppController],
     providers: [AppService],

@@ -126,4 +126,10 @@ export class UserController {
     await this.userService.confirmUpdateEmail(activationToken);
     res.status(HttpStatus.OK).json({ message: 'Votre mise à jour d\'email a été confirmée avec succès.' });
   }
+
+  @Delete('inactive')
+  async deleteInactiveUsers(@Res() res: Response): Promise<void> {
+    const message = await this.userService.deleteInactiveUsers();
+    res.status(HttpStatus.OK).json({ message });
+  }
 }
