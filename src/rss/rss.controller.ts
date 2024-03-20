@@ -36,7 +36,7 @@ export class RssController {
       if (error instanceof NotFoundException || error instanceof BadRequestException) {
         throw error;
       }
-      throw new InternalServerErrorException('Une erreur est survenue lors de la recherche des articles.');
+      throw new InternalServerErrorException(error);
     }
   }
 
