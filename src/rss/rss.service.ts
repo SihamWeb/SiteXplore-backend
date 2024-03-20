@@ -1,7 +1,7 @@
 import {BadRequestException, Injectable, NotFoundException} from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { Rss } from './entities/rss.entity';
-import {Op} from "sequelize";
+import {Op, Sequelize} from "sequelize";
 import {ArticleAuthor} from "./entities/article-author.entity";
 import {Author} from "./entities/author.entity";
 import {Category} from "./entities/category.entity";
@@ -157,7 +157,41 @@ export class RssService {
                     { description: { [Op.like]: `%${query}%` } },
                 ],
             },
+            include: [
+                {
+                    model: Media,
+                    required: false,
+                },
+            ],
         });
+
+        for (const article of articles) {
+            const Categories = await ArticleCategory.findAll({
+                where: {
+                    article_id: article.id
+                },
+                include: [
+                    {
+                        model: Category,
+                        required: false,
+                    }
+                ]
+            });
+
+            const Auteurs = await ArticleAuthor.findAll({
+                where: {
+                    article_id: article.id
+                },
+                include: [
+                    {
+                        model: Author,
+                        required: false,
+                    }
+                ]
+            });
+            article.dataValues.categories = Categories;
+            article.dataValues.authors = Auteurs;
+        }
 
         if (!articles || articles.length === 0) {
             throw new NotFoundException('Aucun article trouvé pour la recherche spécifiée.');
@@ -166,9 +200,115 @@ export class RssService {
         return articles;
     }
 
+    async filtresArticles(startDate: Date, endDate: Date, author: number[]): Promise<Rss[]> {
+        console.log('startDate:', startDate);
+        console.log('endDate:', endDate);
+        let where: any = {};
+
+        if (startDate && endDate) {
+            where.publicationDate = {
+                [Op.between]: [startDate, endDate],
+            };
+        } else if (startDate) {
+            where.publicationDate = {
+                [Op.gte]: startDate,
+            };
+        } else if (endDate) {
+            where.publicationDate = {
+                [Op.lte]: endDate,
+            };
+        }
+
+        console.log('Clause WHERE:', where);
+
+        const articles = await this.rssModel.findAll({
+            where: where,
+            include: [
+                {
+                    model: Media,
+                    required: false,
+                },
+            ],
+        });
+        for (const article of articles) {
+            /*const Categories = await ArticleCategory.findAll({
+                where: {
+                    article_id: article.id
+                },
+                include: [
+                    {
+                        model: Category,
+                        required: false,
+                    }
+                ]
+            });*/
+
+            const Auteurs = await ArticleAuthor.findAll({
+                where: {
+                    article_id: article.id,
+                    author_id : {
+                        [Op.in]: author,
+                    }
+                },
+                include: [
+                    {
+                        model: Author,
+                        required: false,
+                    }
+                ]
+            });
+            console.log('Auteur saisi : ' + author);
+            //article.dataValues.categories = Categories;
+            article.dataValues.authors = Auteurs;
+        }
+
+        if (!articles || articles.length === 0) {
+            throw new NotFoundException('Aucun article trouvé pour les filtres spécifiés.');
+        }
+
+        return articles;
+    }l
+
     async findAll(){
-        const articles = await Rss.findAll();
-        if (articles.length === 0) {
+        const articles = await Rss.findAll(
+            {
+                include: [
+                    {
+                        model: Media,
+                        required: false,
+                    }
+                ],
+            }
+        )
+        for (const article of articles) {
+            const Categories = await ArticleCategory.findAll({
+                where: {
+                    article_id: article.id
+                },
+                include: [
+                    {
+                        model: Category,
+                        required: false,
+                    }
+                ]
+            });
+
+            const Auteurs = await ArticleAuthor.findAll({
+                where: {
+                    article_id: article.id
+                },
+                include: [
+                    {
+                        model: Author,
+                        required: false,
+                    }
+                ]
+            });
+            article.dataValues.categories = Categories;
+            article.dataValues.authors = Auteurs;
+        }
+
+        if (!articles || articles.length === 0) {
             throw new Error('Aucun article trouvé');
         }
         return articles;
@@ -176,7 +316,7 @@ export class RssService {
 
     async findAllAuthors(){
         const authors = await Author.findAll();
-        if (authors.length === 0) {
+        if (!authors || authors.length === 0) {
             throw new Error('Aucun auteur trouvé');
         }
         return authors;
@@ -184,8 +324,8 @@ export class RssService {
 
     async findAllCategories(){
         const categories = await Category.findAll();
-        if (categories.length === 0) {
-            throw new Error('Aucune categorie trouvé');
+        if (!categories || categories.length === 0) {
+            throw new Error('Aucune categorie trouvée');
         }
         return categories;
     }

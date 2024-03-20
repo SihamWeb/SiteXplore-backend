@@ -13,6 +13,7 @@ import {
 import { RssService } from './rss.service';
 import { CreateRssDto } from './dto/create-rss.dto';
 import { UpdateRssDto } from './dto/update-rss.dto';
+import {Rss} from "./entities/rss.entity";
 
 @Controller('rss')
 export class RssController {
@@ -39,13 +40,36 @@ export class RssController {
     }
   }
 
+  @Get('filtres')
+  async filtresArticles(
+      @Query('startDate') startDate?: Date,
+      @Query('endDate') endDate?: Date,
+      @Query('authorIds') authorIds?: number[],
+  ): Promise<Rss[]> {
+    console.log('Paramètres reçus :');
+    console.log('startDate:', startDate);
+    console.log('endDate:', endDate);
+    console.log('authorIds:', authorIds);
+    try {
+      const filtres = await this.rssService.filtresArticles(startDate, endDate, authorIds);
+      return filtres;
+    } catch (error) {
+      console.error('Une erreur est survenue lors de la recherche des articles :', error);
+      if (error instanceof NotFoundException || error instanceof BadRequestException) {
+        throw error;
+      }
+      throw new InternalServerErrorException('Une erreur est survenue lors de la recherche des articles.');
+    }
+  }
+
+
   @Get()
   async findAll() {
     try {
       const articles = await this.rssService.findAll();
       return articles;
     } catch (error) {
-      throw new NotFoundException('Il y a des erreurs dans la récupération de tous les articles');
+      throw error;
     }
   }
 
@@ -55,7 +79,7 @@ export class RssController {
       const authors = await this.rssService.findAllAuthors();
       return authors;
     } catch (error) {
-      throw new NotFoundException('Il y a des erreurs dans la récupération de tous les auteurs');
+      throw new NotFoundException(error);
     }
   }
 
@@ -65,7 +89,7 @@ export class RssController {
       const categories = await this.rssService.findAllCategories();
       return categories;
     } catch (error) {
-      throw new NotFoundException('Il y a des erreurs dans la récupération de toutes les catégories');
+      throw new NotFoundException(error);
     }
   }
 
