@@ -18,7 +18,7 @@ import { MailService } from './mail.service';
                     },
                 },
                 defaults: {
-                    from: `"No Reply" <${config.get('MAIL_FROM')}>`,
+                    from: `"Ne pas répondre" <${config.get('MAIL_FROM')}>`,
                 },
                 template: {
                     dir: 'src/mail/templates',
