@@ -2,6 +2,7 @@ import { MailerService } from '@nestjs-modules/mailer';
 import { Injectable } from '@nestjs/common';
 import {CreateUserDto} from "../user/dto/create-user.dto";
 import {UpdateUserDto} from "../user/dto/update-user.dto";
+import {CreateContactDto} from "../contact/dto/create-contact.dto";
 
 @Injectable()
 export class MailService {
@@ -79,6 +80,44 @@ export class MailService {
                 email: userData.email,
                 firstName: userData.firstName,
                 lastName: userData.lastName
+            },
+        });
+    }
+
+    async sendMessageContact(createContactDto: CreateContactDto) {
+        const { firstName, lastName, email, subject, content } = createContactDto;
+
+        console.log('Contact :', createContactDto);
+
+        await this.mailerService.sendMail({
+            to: 'contact.sitexplore@gmail.com',
+            subject: 'Message reçu sur SiteXplore : ' + subject,
+            template: 'message-contact',
+            context: {
+                firstName: firstName,
+                lastName: lastName,
+                email: email,
+                subject: subject,
+                content: content
+            },
+        });
+    }
+
+    async sendRecapContact(createContactDto: CreateContactDto) {
+        const { firstName, lastName, email, subject, content } = createContactDto;
+
+        console.log('Contact :', createContactDto);
+
+        await this.mailerService.sendMail({
+            to: email,
+            subject: 'Message récapitulatif de votre message sur SiteXplore',
+            template: 'recap-message-contact',
+            context: {
+                firstName: firstName,
+                lastName: lastName,
+                email: email,
+                subject: subject,
+                content: content
             },
         });
     }
