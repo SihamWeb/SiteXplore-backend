@@ -1,8 +1,19 @@
-import {Table, Column, Model, AutoIncrement, PrimaryKey, ForeignKey, BelongsTo} from 'sequelize-typescript';
+import {
+    Table,
+    Column,
+    Model,
+    AutoIncrement,
+    PrimaryKey,
+    ForeignKey,
+    BelongsTo,
+    BelongsToMany
+} from 'sequelize-typescript';
 import {Media} from "./media.entity"
+import {Author} from "./author.entity";
+import {ArticleAuthor} from "./article-author.entity";
 
 @Table({ tableName: 'article' })
-export class Rss extends Model<Rss> {
+export class Rss extends Model {
 
     @AutoIncrement
     @PrimaryKey

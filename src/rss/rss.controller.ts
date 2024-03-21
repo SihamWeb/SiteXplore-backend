@@ -13,10 +13,13 @@ import {
 import { RssService } from './rss.service';
 import { CreateRssDto } from './dto/create-rss.dto';
 import { UpdateRssDto } from './dto/update-rss.dto';
+import {Rss} from "./entities/rss.entity";
 
 @Controller('rss')
 export class RssController {
-  constructor(private readonly rssService: RssService) {}
+  constructor(
+      private readonly rssService: RssService
+  ) {}
 
   @Post('create')
   async create(): Promise<void>{
@@ -34,6 +37,61 @@ export class RssController {
         throw error;
       }
       throw new InternalServerErrorException(error);
+    }
+  }
+
+  @Get('filtres')
+  async filtresArticles(
+      @Query('startDate') startDate?: Date,
+      @Query('endDate') endDate?: Date,
+      @Query('author') author?: number,
+      @Query('category') category?: number,
+  ): Promise<Rss[]> {
+    console.log('Paramètres reçus :');
+    console.log('startDate:', startDate);
+    console.log('endDate:', endDate);
+    console.log('author:', author);
+    console.log('category:', category);
+    try {
+      const filtres = await this.rssService.filtresArticles(startDate, endDate, author, category);
+      return filtres;
+    } catch (error) {
+      console.error('Une erreur est survenue lors de la recherche des articles :', error);
+      if (error instanceof NotFoundException || error instanceof BadRequestException) {
+        throw error;
+      }
+      throw new InternalServerErrorException('Une erreur est survenue lors de la recherche des articles.');
+    }
+  }
+
+
+  @Get()
+  async findAll() {
+    try {
+      const articles = await this.rssService.findAll();
+      return articles;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  @Get('authors')
+  async findAllAuthors() {
+    try {
+      const authors = await this.rssService.findAllAuthors();
+      return authors;
+    } catch (error) {
+      throw new NotFoundException(error);
+    }
+  }
+
+  @Get('categories')
+  async findAllCategories() {
+    try {
+      const categories = await this.rssService.findAllCategories();
+      return categories;
+    } catch (error) {
+      throw new NotFoundException(error);
     }
   }
 
