@@ -44,14 +44,16 @@ export class RssController {
   async filtresArticles(
       @Query('startDate') startDate?: Date,
       @Query('endDate') endDate?: Date,
-      @Query('authorIds') authorIds?: number[],
+      @Query('author') author?: number,
+      @Query('category') category?: number,
   ): Promise<Rss[]> {
     console.log('Paramètres reçus :');
     console.log('startDate:', startDate);
     console.log('endDate:', endDate);
-    console.log('authorIds:', authorIds);
+    console.log('author:', author);
+    console.log('category:', category);
     try {
-      const filtres = await this.rssService.filtresArticles(startDate, endDate, authorIds);
+      const filtres = await this.rssService.filtresArticles(startDate, endDate, author, category);
       return filtres;
     } catch (error) {
       console.error('Une erreur est survenue lors de la recherche des articles :', error);
