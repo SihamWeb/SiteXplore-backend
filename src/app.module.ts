@@ -22,6 +22,7 @@ import {Media} from "./rss/entities/media.entity";
 import {ScheduleModule} from "@nestjs/schedule";
 import { ContactModule } from './contact/contact.module';
 import { LocationModule } from './location/location.module';
+import {Location} from "./location/entities/location.entity";
 
 
 @Module({
@@ -43,7 +44,8 @@ import { LocationModule } from './location/location.module';
               ArticleAuthor, 
               Category, 
               ArticleCategory, 
-              Media
+              Media,
+              Location
             ],
         }),
         ScheduleModule.forRoot(),

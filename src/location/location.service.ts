@@ -1,26 +1,22 @@
 import { Injectable } from '@nestjs/common';
-import { CreateLocationDto } from './dto/create-location.dto';
-import { UpdateLocationDto } from './dto/update-location.dto';
+import {Location} from "./entities/location.entity";
 
 @Injectable()
 export class LocationService {
-  create(createLocationDto: CreateLocationDto) {
-    return 'This action adds a new location';
-  }
+  constructor(){}
 
-  findAll() {
-    return `This action returns all location`;
+
+  async findAll() {
+    const locations = await Location.findAll();
+    if (locations.length === 0){
+      throw new Error ('Aucun site trouvé');
+    }
+    return locations;
   }
 
   findOne(id: number) {
     return `This action returns a #${id} location`;
   }
 
-  update(id: number, updateLocationDto: UpdateLocationDto) {
-    return `This action updates a #${id} location`;
-  }
 
-  remove(id: number) {
-    return `This action removes a #${id} location`;
-  }
 }
