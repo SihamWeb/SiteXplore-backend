@@ -1,7 +1,7 @@
-import {AutoIncrement, BelongsTo, Column, CreatedAt, UpdatedAt, ForeignKey, Model, PrimaryKey, Table} from "sequelize-typescript";
+import {AutoIncrement, Column, CreatedAt, UpdatedAt, Model, PrimaryKey, Table} from "sequelize-typescript";
 
 @Table({ tableName: 'map' })
-export class Location extends Model {
+export class Location extends Model<Location> {
     @AutoIncrement
     @PrimaryKey
     @Column
