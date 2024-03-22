@@ -1,6 +1,5 @@
 // Initialisation de la carte
 
-
 let map = L.map('map').setView([46.942135, 2.722939], 6);
 
 let Stadia_StamenTonerLite = L.tileLayer('https://tiles.stadiamaps.com/tiles/stamen_toner_lite/{z}/{x}/{y}{r}.{ext}', {
