@@ -32,9 +32,12 @@ export class RssService {
     ) {
     }
 
+    // Tous les jours à 8h
     @Cron('0 8 * * *')
+    // Création de la base de données des articles RSS
     async create(): Promise<void> {
 
+        // Suppression des données des tables liées au RSS
         await this.articleAuthorModel.destroy({truncate: true, restartIdentity: true});
         await this.articleCategoryModel.destroy({truncate: true, restartIdentity: true});
         await this.categoryModel.destroy({where: {}, restartIdentity: true});
@@ -44,6 +47,7 @@ export class RssService {
 
         const parser = require('rss-url-parser');
 
+        // Les feed RSS dont on récupère les articles/médias
         const rss_feed = [
             'https://services.lesechos.fr/rss/archeologie.xml',
             'https://www.lemonde.fr/archeologie/rss_full.xml',
@@ -58,23 +62,29 @@ export class RssService {
             'https://www.youtube.com/feeds/videos.xml?channel_id=UC6Yhg_Phtz-RHX0CBFhU8pA'
         ];
 
+        // Pour chaque flux RSS
         for (const url of rss_feed) {
             console.log('#######################################');
             console.log('##### Chargement du flux : ' + url);
             console.log('#######################################');
 
             try {
+                // Analyse du flux pour récupérer les données
                 const data = await parser(url);
 
+                // Pour chaque article
                 for (const item of data) {
 
                     const rssData: any = {};
 
+                    // Extraire les données de l'article
                     rssData.title = item.title ?? undefined;
                     rssData.description = item.description ?? undefined;
                     rssData.publicationDate = item.pubDate ? new Date(item.pubDate) : undefined;
                     rssData.link = item.link ?? undefined;
 
+                    // Si les données existe, création des objet
+                    // et enregistrement dans la base de données
                     if (Object.keys(rssData).length > 0) {
                         // Image miniature youtube
                         (item.image.url) ? await Media.create({mediaLink: item.image.url}) : console.log('');
@@ -88,11 +98,14 @@ export class RssService {
                                 mediaDescription: item['media:content']['media:description'] ? item['media:content']['media:description']['#'] : '',
                                 mediaCredit: item['media:content']['media:credit'] ? item['media:content']['media:credit']['#'] : '',
                             })
+                            // Association de l'id du média à l'article
                             rssData.media_id = media.id;
                         }
 
+                        // Enregistrement de l'article dans la base de données
                         const rss = await this.rssModel.create(rssData);
 
+                        // Récupération des auteurs
                         let liste_auteurs = (item.author !== null && item.author.length !== 0) ? item.author : item.meta.author;
 
                         if (liste_auteurs !== null) {
@@ -108,7 +121,7 @@ export class RssService {
                                         name: liste_auteurs,
                                     });
                                 }
-
+                                // Association de l'auteur à l'article
                                 await this.articleAuthorModel.create({
                                     article_id: rss.id,
                                     author_id: author.id,
@@ -116,6 +129,7 @@ export class RssService {
                             }
                         }
 
+                        // Récupération des catégories de l'article
                         let liste_categories = (item.categories.length !== 0 ? item.categories : item.meta.categories);
 
                         if (liste_categories !== null) {
@@ -133,6 +147,7 @@ export class RssService {
                                         });
                                     }
 
+                                    // Association de la catégorie à l'article
                                     await this.articleCategoryModel.create({
                                         article_id: rss.id,
                                         category_id: category.id,
@@ -150,12 +165,16 @@ export class RssService {
         }
     }
 
-    // Search bar
+    // Barre de recherche
     async searchArticles(query: string): Promise<Rss[]> {
+        // Vérification si une requête est envoyé
         if (!query) {
             throw new BadRequestException('Aucune recherche envoyée');
         }
 
+        // Recherche des articles dans la base de données
+        // en fonction des requêtes de recherche
+        // dans 'title' et 'description'
         const articles = await this.rssModel.findAll({
             where: {
                 [Op.or]: [
@@ -172,6 +191,7 @@ export class RssService {
         });
 
         for (const article of articles) {
+            // Récupération des catégories associées à chaque article
             const Categories = await ArticleCategory.findAll({
                 where: {
                     article_id: article.id
@@ -184,6 +204,7 @@ export class RssService {
                 ]
             });
 
+            // Récupération des auteurs associés à chaque article
             const Auteurs = await ArticleAuthor.findAll({
                 where: {
                     article_id: article.id
@@ -195,6 +216,7 @@ export class RssService {
                     }
                 ]
             });
+            // Ajout des catégories et auteurs à chacun des articles
             article.dataValues.categories = Categories;
             article.dataValues.authors = Auteurs;
         }
@@ -206,15 +228,20 @@ export class RssService {
         return articles;
     }
 
+    // Filtrer les articles en fonction des critères utilisateur
     async filtresArticles(startDate: Date, endDate: Date, author: number, category: number): Promise<any> {
         let where: any = {};
 
+        // Si aucun critère
         if (!startDate && !endDate && !author && !category) {
             console.log('AUCUN PARAMETRE');
+            // Retourne tous les articles
             const articles = await this.findAll();
             return articles;
         }
 
+        // Si une date saisie,
+        // Construction de la clause WHERE sur la date de publication
         if (startDate && endDate) {
             where.publicationDate = {
                 [Op.between]: [moment(startDate).tz('Europe/Paris'), moment(endDate).tz('Europe/Paris')],
@@ -229,6 +256,7 @@ export class RssService {
             };
         }
 
+        // Si au moins une date est saisie mais pas d'auteur ni catégorie
         if ((Object.keys(where).length !== 0) && !author && !category){
             console.log('WHERE');
             const articles = await this.rssModel.findAll({
@@ -277,7 +305,9 @@ export class RssService {
             return articles;
         }
 
+        // Si pas de date saisi
         if (Object.keys(where).length === 0) {
+            // Filtrer les articles par auteur
             if (author && !category){
                 console.log('AUTHOR');
                 const Authors = await ArticleAuthor.findAll({
@@ -299,6 +329,7 @@ export class RssService {
                             required: false,
                         },
                     ],
+                    // Associer l'id auteur de la table de jointure à l'id de l'auteur saisi
                     where: { author_id: author },
                 });
 
@@ -329,6 +360,7 @@ export class RssService {
 
                 return Authors;
 
+            // Filtrer les articles par categorie
             } else if (category && !author){
                 console.log('CATEGORY');
                 const Categories = await ArticleCategory.findAll({
@@ -350,6 +382,7 @@ export class RssService {
                             required: false,
                         },
                     ],
+                    // Associer l'id category de la table de jointure à l'id de la category saisi
                     where: { category_id: category },
                 });
 
@@ -380,6 +413,7 @@ export class RssService {
 
                 return Categories;
 
+            // Filtrer les articles par auteur et category
             } else if (author && category) {
                 console.log('AUTHOR and CATEGORY');
 
@@ -413,7 +447,9 @@ export class RssService {
             }
         }
 
+        // Si au moins une date est saisie
         if (where){
+            // Filtrer par auteur et date
             if (author && !category){
                 console.log('AUTHOR & WHERE');
                 const Authors = await ArticleAuthor.findAll({
@@ -433,6 +469,7 @@ export class RssService {
                             required: false,
                         },
                     ],
+                    // Associer l'id auteur de la table de jointure à l'id de l'auteur saisi
                     where: { author_id: author },
                 });
 
@@ -463,6 +500,7 @@ export class RssService {
 
                 return Authors;
 
+            // Filtrer par category et date
             } else if (category && !author){
                 console.log('CATEGORY & WHERE');
                 const Categories = await ArticleCategory.findAll({
@@ -482,6 +520,7 @@ export class RssService {
                             required: false,
                         },
                     ],
+                    // Associer l'id categorie de la table de jointure à l'id de la categorie saisie
                     where: { category_id: category },
                 });
 
@@ -512,6 +551,7 @@ export class RssService {
 
                 return Categories;
 
+            // Filtrer par date, categpry et author
             } else if (author && category){
                 console.log('WHERE and AUTHOR and CATEGORY');
 
@@ -557,6 +597,7 @@ export class RssService {
         }
     }
 
+    // Récupérer tous les articles
     async findAll(){
         const articles = await Rss.findAll(
             {
@@ -582,6 +623,7 @@ export class RssService {
         return articles;
     }
 
+    // Récupérer tous les auteurs
     async findAllAuthors(){
         const authors = await Author.findAll();
         if (!authors || authors.length === 0) {
@@ -590,6 +632,7 @@ export class RssService {
         return authors;
     }
 
+    // Récupérer toutes les catégories
     async findAllCategories(){
         const categories = await Category.findAll();
         if (!categories || categories.length === 0) {
