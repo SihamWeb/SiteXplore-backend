@@ -14,7 +14,7 @@ interface FileParams {
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
-  // Get one user by id
+  // Obtenir mes informations en étant connecté
   @UseGuards(AuthGuard('jwt'))
   @Get('me')
   async findMe(@Req() req) {
@@ -27,7 +27,7 @@ export class UserController {
     }
   }
 
-  // Delete my account
+  // Supprimer mon compte
   @UseGuards(AuthGuard('jwt'))
   @Delete('me')
   async removeMe(@Req() req) {
@@ -40,7 +40,7 @@ export class UserController {
     }
   }
 
-  //Users update their own informations
+  // Modifier mes informations
   @UseGuards(AuthGuard('jwt'))
   @Patch()
   async update(@Req() req, @Body() updateData: UpdateUserDto) {
@@ -51,6 +51,7 @@ export class UserController {
   }
 
   // Admin
+  // Modifier le rôle des utilisateurs
   @UseGuards(AuthGuard('jwt'))
   @Patch('admin/role/:userId')
   async updateAdminRole(
@@ -62,6 +63,7 @@ export class UserController {
     return this.userService.updateAdminRole(userId, updateData.isAdmin, reqesterId);
   }
 
+  // Supprimer un utilisateur (besoin du rôle admin)
   @UseGuards(AuthGuard('jwt'))
   @Delete('admin/:userId')
   async deleteUser(
@@ -72,6 +74,7 @@ export class UserController {
     return this.userService.deleteUser(userId, reqesterId);
   }
 
+  // Obtenir tous les utilisateurs (besoin du rôle admin)
   @UseGuards(AuthGuard('jwt'))
   @Get()
   async findAll(@Req() req) {
@@ -79,6 +82,7 @@ export class UserController {
     return this.userService.findAll(reqesterId);
   }
 
+  // Obtenir les informations d'un utilisateur (besoin du rôle admin)
   @UseGuards(AuthGuard('jwt'))
   @Get(':userId')
   async findOne(
@@ -88,7 +92,7 @@ export class UserController {
     return this.userService.findOne(userId, reqesterId);
   }
 
-  // Upload profile picture
+  // Soumission d'une image de profil (utilisateur connecté)
   @UseGuards(AuthGuard('jwt'))
   @Patch('profile-picture')
   @UseInterceptors(FileInterceptor('profilePicture', {
@@ -110,6 +114,7 @@ export class UserController {
     return { message: 'Informations utilisateur mises à jour avec succès', profilePictureName };
   }
 
+  // Suppression de mon image de profil
   @UseGuards(AuthGuard('jwt'))
   @Delete('profile-picture')
   async deleteProfilePicture(@Req() req) {
@@ -118,6 +123,7 @@ export class UserController {
     return { message: 'Image de profil supprimée avec succès' };
   }
 
+  // Confirmation email modification de mon email
   @Get('confirm-update-email')
   async confirmUpdateEmail(
       @Query('token') activationToken: string,
@@ -127,6 +133,7 @@ export class UserController {
     res.status(HttpStatus.OK).json({ message: 'Votre mise à jour d\'email a été confirmée avec succès.' });
   }
 
+  // SUppression d'un compte utilisateur inactif
   @Delete('inactive')
   async deleteInactiveUsers(@Res() res: Response): Promise<void> {
     const message = await this.userService.deleteInactiveUsers();
