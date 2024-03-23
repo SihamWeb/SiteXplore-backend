@@ -12,18 +12,24 @@ export class ContactService {
       private mailService: MailService,
   ) {}
 
+  // Soumission du formulaire de contact
   async create(createContactDto: CreateContactDto) {
     const { firstName, lastName, email, subject, content } = createContactDto;
+
+    // Vérification que tous les champs obligatoires sont saisis
     if (firstName){
       if (lastName){
         if (email){
+          // Vérification si l'email est valide
           if (!(await this.userService.isValidEmail(email))) {
             throw new BadRequestException('L\email renseigné n\'est pas valide');
           }
           if (subject){
             if (content){
 
-              await this.mailService.sendMessageContact(createContactDto);
+              // Envoie du mesage au destinataire
+              await this.mailService.sendMessageContact(createContactDto)
+              // Envoi du message récapitulatif à l'emetteur
               await this.mailService.sendRecapContact(createContactDto);
               return 'Message bien envoyé';
 

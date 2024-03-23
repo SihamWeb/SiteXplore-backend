@@ -7,6 +7,7 @@ import { UpdateContactDto } from './dto/update-contact.dto';
 export class ContactController {
   constructor(private readonly contactService: ContactService) {}
 
+  // Formulaire de contact
   @Post()
   async create(@Body() createContactDto: CreateContactDto) {
     try {
