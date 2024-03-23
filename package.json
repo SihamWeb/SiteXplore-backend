@@ -33,6 +33,7 @@
     "@nestjs/sequelize": "^10.0.1",
     "@types/escape-html": "^1.0.4",
     "bcrypt": "^5.1.1",
+    "body-parser": "^1.20.2",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.1",
     "handlebars": "^4.7.8",
@@ -101,7 +102,8 @@
     ],
     "rootDir": ".",
     "testMatch": [
-      "**/src/users/*.spec.ts"
+      "**/src/users/*.spec.ts",
+      "**/src/auth/*.spec.ts"
     ],
     "transform": {
       "^.+\\.(t|j)s$": "ts-jest"

@@ -24,7 +24,7 @@ export class AuthenticationService {
     ) {}
 
     // Inscription
-    async register(userData: CreateUserDto): Promise<string> {
+    /*async register(userData: CreateUserDto): Promise<string> {
         const { email, firstName, lastName, password } = userData;
 
         // Vérification que tous les champs sont renseignés
@@ -132,7 +132,7 @@ export class AuthenticationService {
             return {
                 error : 'Identifiants invalides'
             };
-        // Utilisateur trouvé
+            // Utilisateur trouvé
         } else {
             if (password) {
                 // Comparaison mot de passe saisi avec le mot de passe hashé qui est dans la base de données
@@ -235,6 +235,6 @@ export class AuthenticationService {
         } catch (e) {
             throw new InternalServerErrorException(e, decodedToken.emailOld);
         }
-    }
+    }*/
 
 }

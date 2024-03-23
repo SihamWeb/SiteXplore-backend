@@ -13,7 +13,7 @@ export class AuthenticationController {
     ) {}
 
     // Inscription
-    @Post('register')
+/*    @Post('register')
     async register(
         @Body() userData: CreateUserDto,
         @Res() res: Response
@@ -22,7 +22,7 @@ export class AuthenticationController {
         res.status(HttpStatus.CREATED).json({ message });
     }
 
-    // Inscription confirmé par mail
+    //Inscription confirmé par mail
     @Get('confirm-registration')
     async confirmRegistration(
         @Query('token') activationToken: string,
@@ -69,5 +69,5 @@ export class AuthenticationController {
     ) {
         await this.authenticationService.confirmForgottenPassword(activationToken);
         res.status(HttpStatus.OK).json({ message: 'Votre modification a été confirmée avec succès.' });
-    }
+    }*/
 }
