@@ -12,6 +12,7 @@ export class AuthenticationController {
         private authenticationService: AuthenticationService,
     ) {}
 
+    // Inscription
     @Post('register')
     async register(
         @Body() userData: CreateUserDto,
@@ -21,6 +22,7 @@ export class AuthenticationController {
         res.status(HttpStatus.CREATED).json({ message });
     }
 
+    // Inscription confirmé par mail
     @Get('confirm-registration')
     async confirmRegistration(
         @Query('token') activationToken: string,
@@ -30,6 +32,7 @@ export class AuthenticationController {
         res.redirect('http://localhost:4200/mon-compte');
     }
 
+    // Connexion
     @Post('login')
     @UseGuards(LocalGuard)
     async login(@Req() req: Request, @Res() res: Response) {
@@ -38,7 +41,8 @@ export class AuthenticationController {
         res.status(HttpStatus.CREATED).json({ message });
     }
 
-
+    // Obtenir les données de l'utilisateur authentifié,
+    // si la requête contient un JWT valide
     @Get('status')
     @UseGuards(JwtAuthGuard)
     status(@Req() req: Request) {
@@ -47,6 +51,7 @@ export class AuthenticationController {
         return req.user;
     }
 
+    // Mot de passe oublié
     @Post('forgotten-password')
     async forgottenPassword(
         @Res() res,
@@ -56,6 +61,7 @@ export class AuthenticationController {
         res.status(HttpStatus.CREATED).json({ message });
     }
 
+    // Modification du mot de passe oublié confirmée par mail
     @Get('update-forgotten-password')
     async updateForgottenPassword(
         @Query('token') activationToken: string,
