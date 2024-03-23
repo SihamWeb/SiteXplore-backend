@@ -23,6 +23,7 @@ import {ScheduleModule} from "@nestjs/schedule";
 import { ContactModule } from './contact/contact.module';
 import { LocationModule } from './location/location.module';
 import {Location} from "./location/entities/location.entity";
+import { AuthModule } from './auth/auth.module';
 
 
 @Module({
@@ -56,6 +57,7 @@ import {Location} from "./location/entities/location.entity";
         MailModule,
         ContactModule,
         LocationModule,
+        AuthModule,
     ],
     controllers: [AppController],
     providers: [AppService],

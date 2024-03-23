@@ -11,7 +11,7 @@ export class MailService {
     // Envoi d'un mail de confirmation à un nouveau utilisateur
     async sendConfirmationEmail(userData: CreateUserDto | UpdateUserDto, activationToken: string) {
         // Lien d'activitaion avec le token d'activitaion
-        const url = `http://localhost:3000/confirm-registration?token=${activationToken}`;
+        const url = `http://localhost:3000/auth/confirm-registration?token=${activationToken}`;
 
         console.log('User :', activationToken);
 
@@ -49,7 +49,7 @@ export class MailService {
     // Envoie d'un email de confrmation lors de l'oublie du mot de passe
     async sendConfirmationForgottenPassword(userData: UpdateUserDto, activationToken: string) {
         // Lien d'activitaion avec le token d'activitaion
-        const url = `http://localhost:3000/update-forgotten-password?token=${activationToken}`;
+        const url = `http://localhost:3000/auth/update-forgotten-password?token=${activationToken}`;
 
         console.log('User :', activationToken);
 
