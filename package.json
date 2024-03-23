@@ -58,6 +58,7 @@
     "split": "^1.0.1",
     "split.js": "^1.6.5",
     "typeof": "^1.0.0",
+    "typeorm": "^0.3.20",
     "url-parser": "^0.0.1"
   },
   "devDependencies": {

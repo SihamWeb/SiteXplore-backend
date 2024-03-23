@@ -6,11 +6,13 @@ import {
     PrimaryKey,
     ForeignKey,
     BelongsTo,
-    BelongsToMany
+    BelongsToMany,
 } from 'sequelize-typescript';
-import {Media} from "./media.entity"
-import {Author} from "./author.entity";
-import {ArticleAuthor} from "./article-author.entity";
+import { Media } from "./media.entity";
+import { Category } from "./category.entity";
+import { ArticleCategory } from "./article-category.entity";
+import { ArticleAuthor } from './article-author.entity';
+import { Author } from './author.entity';
 
 @Table({ tableName: 'article' })
 export class Rss extends Model {
@@ -18,7 +20,7 @@ export class Rss extends Model {
     @AutoIncrement
     @PrimaryKey
     @Column
-    id : number ;
+    id: number;
 
     @Column
     title: string;
@@ -32,13 +34,18 @@ export class Rss extends Model {
     publicationDate: Date;
 
     @Column
-    link:string ;
+    link: string;
 
     @ForeignKey(() => Media)
     @Column
-    media_id:number;
+    media_id: number;
 
     @BelongsTo(() => Media)
-    media : Media
-}
+    media: Media;
 
+    @BelongsToMany(() => Category, () => ArticleCategory)
+    categories: Category[];
+
+    @BelongsToMany(() => Author, () => ArticleAuthor)
+    authors: Author[];
+}
