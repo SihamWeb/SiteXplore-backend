@@ -10,10 +10,13 @@ import {Media} from "./entities/media.entity";
 import * as moment from 'moment-timezone';
 
 import {Cron} from "@nestjs/schedule";
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class RssService {
     constructor(
+        @InjectModel(Rss)
+        private rssRepository: Repository<Rss>,
         @InjectModel(Rss)
         private rssModel: typeof Rss,
         @InjectModel(Author)
@@ -561,38 +564,18 @@ export class RssService {
                     {
                         model: Media,
                         required: false,
-                    }
-                ],
-            }
-        )
-        for (const article of articles) {
-            const Categories = await ArticleCategory.findAll({
-                where: {
-                    article_id: article.id
-                },
-                include: [
+                    },
+                    {
+                        model: Author,
+                        required: false,
+                    },
                     {
                         model: Category,
                         required: false,
                     }
-                ]
-            });
-
-            const Auteurs = await ArticleAuthor.findAll({
-                where: {
-                    article_id: article.id
-                },
-                include: [
-                    {
-                        model: Author,
-                        required: false,
-                    }
-                ]
-            });
-            article.dataValues.categories = Categories;
-            article.dataValues.authors = Auteurs;
-        }
-
+                ],
+            }
+        )
         if (!articles || articles.length === 0) {
             throw new Error('Aucun article trouvé');
         }
