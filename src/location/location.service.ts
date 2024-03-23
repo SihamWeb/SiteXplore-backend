@@ -10,7 +10,7 @@ export class LocationService {
       private sequelize: Sequelize
   ){}
 
-
+  // Récupération de tous les sites
   async findAll() {
     const locations = await Location.findAll();
     if (locations.length === 0){
@@ -19,11 +19,13 @@ export class LocationService {
     return locations;
   }
 
+  // Récupère tous les département distincts
   async findAllDepartments(){
     const departments = await Location.findAll(
         {
           attributes: [
               [
+                  // Fonction DISTINCT de Sequelize pour éviter les doublons
                   this.sequelize.fn('DISTINCT', this.sequelize.col('Departement')), 'Departement'
               ]
           ],
@@ -33,13 +35,17 @@ export class LocationService {
     if (!departments || departments.length === 0) {
       throw new Error('Aucun département trouvé');
     }
+
+    // Renvoie un tableau avec uniquement les noms des départements
     return departments.map(department => department.Departement);
   }
 
+  // Récupère toutes les périodes
   async findAllPeriodes(){
     const periodes = await Location.findAll({
       attributes: [
         [
+          // Fonction DISTINCT de Sequelize pour éviter les doublons
           this.sequelize.fn('DISTINCT', this.sequelize.col('Periodes')), 'Periodes'
         ]
       ],
@@ -49,18 +55,25 @@ export class LocationService {
       throw new Error('Aucune période trouvé');
     }
 
+    // Toutes les péridoes en une seule chaîne de caractères
     const allPeriodesInOneString = periodes.map(periode => periode.Periodes).join(',');
 
+    // Extraire les périodes de cette chaîne en prenant en compte les ","
     const extractPeriodes = allPeriodesInOneString.split(',').map(periode => periode.trim());
 
+    // Traitement des doublons et des chaînes vides
     const periodesWithoutDoublon = [...new Set(extractPeriodes)].filter(periode => periode !== '');
 
+    // Renvoie un tableau avec les noms des périodes uniques
     return periodesWithoutDoublon;
   }
 
+  // FIltres des sites
   async filtresLocations (startDate: Date, endDate: Date, department: string, periode: string){
+    // Objet qui contiendra les conditions
     let where: any = {};
 
+    // Si aucun filtre saisi mais le formulaire est soumis
     if (
         !startDate &&
         !endDate &&
@@ -73,17 +86,25 @@ export class LocationService {
     }
 
     if (department) {
+      // Ajout du département saisi à la condition de recherche
       where.Departement = department;
     }
 
     if (periode) {
+      // Ajout de la période saisie à la condition de recherche
       where.Periodes = {
+        // "Like" pour rechercher si la période saisie est disponible parmi les périodes du site
         [Op.like]: `%${periode}%`
       };
     }
 
+    // Si une date de début &/ou de fin est saisi,
+    // elles sont ajouté à la condition de recherche
     if (startDate && endDate) {
       where['Debut'] = {
+        // "gte" pour vérifier les sites ayant une date de début supérieure ou égale à la date saisie
+        // "lte" pour vérifier les sites ayant une date de fin inférieure ou égale à la date saisie
+        // "moment" pour avoir les dates au fuseau horaire 'Europe/Paris' et ne pas avoir une heure en moins
         [Op.gte]: moment(startDate).tz('Europe/Paris'),
         [Op.lte]: moment(endDate).tz('Europe/Paris'),
       };
@@ -97,6 +118,7 @@ export class LocationService {
       };
     }
 
+    // Récupère et retourne tous les sites qui correspondent à la condition de recherche
     const locations = await Location.findAll({where});
     return locations;
   }
