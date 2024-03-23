@@ -21,12 +21,13 @@ export class RssController {
       private readonly rssService: RssService
   ) {}
 
+  // Alimentation de la base de données avec les feeds RSS
   @Post('create')
   async create(): Promise<void>{
     await this.rssService.create();
   }
 
-  // Search bar
+  // Barre de recherche
   @Get('search')
   async searchArticles(@Query('query') query: string) {
     try {
@@ -40,6 +41,7 @@ export class RssController {
     }
   }
 
+  // Filtres des articles RSS
   @Get('filtres')
   async filtresArticles(
       @Query('startDate') startDate?: Date,
@@ -64,7 +66,7 @@ export class RssController {
     }
   }
 
-
+// Récupérer tous les articles
   @Get()
   async findAll() {
     try {
@@ -75,6 +77,7 @@ export class RssController {
     }
   }
 
+  // Récupérer tous les auteurs
   @Get('authors')
   async findAllAuthors() {
     try {
@@ -85,6 +88,7 @@ export class RssController {
     }
   }
 
+  // Récupérer toutes les catégories
   @Get('categories')
   async findAllCategories() {
     try {
@@ -94,29 +98,4 @@ export class RssController {
       throw new NotFoundException(error);
     }
   }
-
-  /*@Post()
-  create(@Body() createRssDto: CreateRssDto) {
-    return this.rssService.create(createRssDto);
-  }
-
-  @Get()
-  findAll() {
-    return this.rssService.findAll();
-  }
-
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.rssService.findOne(+id);
-  }
-
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateRssDto: UpdateRssDto) {
-    return this.rssService.update(+id, updateRssDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.rssService.remove(+id);
-  }*/
 }
