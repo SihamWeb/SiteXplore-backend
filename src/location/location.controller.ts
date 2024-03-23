@@ -12,11 +12,14 @@ import { LocationService } from './location.service';
 export class LocationController {
   constructor(private readonly locationService: LocationService) {}
 
+  // Récupérer tous les dites
   @Get()
   findAll() {
     return this.locationService.findAll();
   }
 
+  // Récupérer tous les départements sans doublons
+  // Utile pour afficher les choix de filtres dynamiquement
   @Get('departments')
   async findAllDepartments() {
     try {
@@ -27,6 +30,8 @@ export class LocationController {
     }
   }
 
+  // Récupérer toutes les périodes sans doublons
+  // Utile pour afficher les choix de filtres dynamiquement
   @Get('periodes')
   async findAllPeriodes() {
     try {
@@ -37,6 +42,7 @@ export class LocationController {
     }
   }
 
+  // Filtres des sites
   @Get('filtres')
   async filtresLocations(
       @Query('startDate') startDate?: Date,
