@@ -101,13 +101,15 @@ export class LocationService {
     // Si une date de début &/ou de fin est saisi,
     // elles sont ajouté à la condition de recherche
     if (startDate && endDate) {
-      where['Debut'] = {
         // "gte" pour vérifier les sites ayant une date de début supérieure ou égale à la date saisie
         // "lte" pour vérifier les sites ayant une date de fin inférieure ou égale à la date saisie
         // "moment" pour avoir les dates au fuseau horaire 'Europe/Paris' et ne pas avoir une heure en moins
-        [Op.gte]: moment(startDate).tz('Europe/Paris'),
-        [Op.lte]: moment(endDate).tz('Europe/Paris'),
-      };
+        where['Debut'] = {
+          [Op.gte]: moment(startDate).tz('Europe/Paris'),
+        };
+        where['Fin'] = {
+          [Op.lte]: moment(endDate).tz('Europe/Paris'),
+        };
     } else if (startDate) {
       where['Debut'] = {
         [Op.gte]: moment(startDate).tz('Europe/Paris'),
