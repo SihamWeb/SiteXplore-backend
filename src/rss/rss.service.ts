@@ -355,10 +355,20 @@ export class RssService {
                 }
 
                 if (Object.keys(Authors).length === 0) {
-                    throw new NotFoundException('Aucun article trouvé pour les filtres spécifiés.');
+                    let data = {
+                        status: 404,
+                        message: 'Aucun article trouvé pour les filtres spécifiés.',
+                    }
+
+                    return data;
                 }
 
-                return Authors;
+                let RSS = [];
+                Authors.forEach(function (author) {
+                    RSS.push(author.rss);
+                });
+
+                return RSS;
 
             // Filtrer les articles par categorie
             } else if (category && !author){
@@ -408,10 +418,20 @@ export class RssService {
                 }
 
                 if (Object.keys(Categories).length === 0) {
-                    throw new NotFoundException('Aucun article trouvé pour les filtres spécifiés.');
+                    let data = {
+                        status: 404,
+                        message: 'Aucun article trouvé pour les filtres spécifiés.',
+                    }
+
+                    return data;
                 }
 
-                return Categories;
+                let RSS = [];
+                Categories.forEach(function (category) {
+                    RSS.push(category.rss)
+                });
+
+                return RSS;
 
             // Filtrer les articles par auteur et category
             } else if (author && category) {
@@ -440,9 +460,13 @@ export class RssService {
                 });
 
                 if (Object.keys(articles).length === 0) {
-                    throw new NotFoundException('Aucun article trouvé pour les filtres spécifiés.');
-                }
+                    let data = {
+                        status: 404,
+                        message: 'Aucun article trouvé pour les filtres spécifiés.',
+                    }
 
+                    return data;
+                }
                 return articles;
             }
         }
@@ -495,10 +519,20 @@ export class RssService {
                 }
 
                 if (Object.keys(Authors).length === 0) {
-                    throw new NotFoundException('Aucun article trouvé pour les filtres spécifiés.');
+                    let data = {
+                        status: 404,
+                        message: 'Aucun article trouvé pour les filtres spécifiés.',
+                    }
+
+                    return data;
                 }
 
-                return Authors;
+                let RSS = [];
+                Authors.forEach(function (author) {
+                    RSS.push(author.rss);
+                });
+
+                return RSS;
 
             // Filtrer par category et date
             } else if (category && !author){
@@ -546,10 +580,20 @@ export class RssService {
                 }
 
                 if (Object.keys(Categories).length === 0) {
-                    throw new NotFoundException('Aucun article trouvé pour les filtres spécifiés.');
+                    let data = {
+                        status: 404,
+                        message: 'Aucun article trouvé pour les filtres spécifiés.',
+                    }
+
+                    return data;
                 }
 
-                return Categories;
+                let RSS = [];
+                Categories.forEach(function (category) {
+                    RSS.push(category.rss);
+                });
+
+                return RSS;
 
             // Filtrer par date, categpry et author
             } else if (author && category){
@@ -589,7 +633,12 @@ export class RssService {
                 });
 
                 if (Object.keys(articles).length === 0) {
-                    throw new NotFoundException('Aucun article trouvé pour les filtres spécifiés.');
+                    let data = {
+                        status: 404,
+                        message: 'Aucun article trouvé pour les filtres spécifiés.',
+                    }
+
+                    return data;
                 }
 
                 return articles;
