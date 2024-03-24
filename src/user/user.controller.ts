@@ -18,8 +18,11 @@ export class UserController {
   @UseGuards(AuthGuard('jwt'))
   @Get('me')
   async findMe(@Req() req) {
+    console.log('COntroller')
+    console.log('Controller' + req.user.id);
     try {
       const userId = req.user.id;
+      console.log('Try' + userId);
       const user = await this.userService.findMe(userId);
       return user;
     } catch (error) {

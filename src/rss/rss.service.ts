@@ -75,6 +75,9 @@ export class RssService {
                 // Pour chaque article
                 for (const item of data) {
 
+                    // Une pause de 100ms avant la reuête de l'article suivante
+                    await new Promise(resolve => setTimeout(resolve, 100));
+
                     const rssData: any = {};
 
                     // Extraire les données de l'article
