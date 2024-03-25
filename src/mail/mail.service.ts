@@ -38,7 +38,7 @@ export class MailService {
         // Envoie de l'email
         await this.mailerService.sendMail({
             to: email,
-            subject: 'Bienvenue chez SiteXplore ! Confirmez votre email d\'inscription !',
+            subject: 'Confirmez votre email d\'inscription !',
             template: 'confirmation-mail-updated',
             context: {
                 url,
@@ -56,7 +56,7 @@ export class MailService {
         // Envoie de l'email
         await this.mailerService.sendMail({
             to: userData.email,
-            subject: 'Bienvenue chez SiteXplore ! Confirmez votre modification de mot de passe suite à un oubli !',
+            subject: 'Confirmez votre modification de mot de passe suite à un oubli !',
             template: 'confirmation-forgotten-password',
             context: {
                 email: userData.email,
@@ -105,7 +105,7 @@ export class MailService {
 
         // Envoie de l'email
         await this.mailerService.sendMail({
-            to: 'contact.sitexplore@gmail.com',
+            to: 'sitexplore@outlook.fr',
             subject: 'Message reçu sur SiteXplore : ' + subject,
             template: 'message-contact',
             context: {

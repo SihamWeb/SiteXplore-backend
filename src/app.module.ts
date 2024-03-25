@@ -1,18 +1,13 @@
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import {ConfigModule, ConfigService} from '@nestjs/config';
+import {ConfigModule} from '@nestjs/config';
 import { SequelizeModule } from '@nestjs/sequelize';
-import { AuthenticationModule } from './authentication/authentication.module';
 import { UserModule } from './user/user.module';
 import * as process from "process";
 import {User} from "./user/entities/user.entity";
 import { MailModule } from './mail/mail.module';
-import {HandlebarsAdapter} from "@nestjs-modules/mailer/dist/adapters/handlebars.adapter";
-import {MailerModule} from "@nestjs-modules/mailer";
-import path from "path";
 import { RssModule } from './rss/rss.module';
-import { MediaModule } from './media/media.module';
 import {Rss} from "./rss/entities/rss.entity";
 import {Author} from "./rss/entities/author.entity";
 import {ArticleAuthor} from "./rss/entities/article-author.entity";
@@ -51,8 +46,6 @@ import { AuthModule } from './auth/auth.module';
         }),
         ScheduleModule.forRoot(),
         RssModule,
-        MediaModule,
-        AuthenticationModule,
         UserModule,
         MailModule,
         ContactModule,

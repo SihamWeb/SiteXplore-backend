@@ -3,13 +3,14 @@ import { CreateContactDto } from './dto/create-contact.dto';
 import { UpdateContactDto } from './dto/update-contact.dto';
 import {UserService} from "../user/user.service";
 import {MailService} from "../mail/mail.service";
+import {AuthService} from "../auth/auth.service";
 
 @Injectable()
 export class ContactService {
 
   constructor(
-      private userService: UserService,
       private mailService: MailService,
+      private authService: AuthService,
   ) {}
 
   // Soumission du formulaire de contact
@@ -21,7 +22,7 @@ export class ContactService {
       if (lastName){
         if (email){
           // Vérification si l'email est valide
-          if (!(await this.userService.isValidEmail(email))) {
+          if (!(await this.authService.isValidEmail(email))) {
             throw new BadRequestException('L\email renseigné n\'est pas valide');
           }
           if (subject){
